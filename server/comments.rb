@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 #
-# This is a sinatra application for storing/retrieving comments.
+# This is a Sinatra application for storing/retrieving comments.
 #
 # It was originally designed to work on the http://tweaked.io/ site
 # but there is nothing specific to that site here.
@@ -34,6 +34,14 @@
 #
 #   NOTE: By default the server will bind to 127.0.0.1:9393
 #
+#   Specify the backend to use via the environmental variable STORAGE
+#
+#     STORAGE=redis ./server/comments.rb
+#
+#    or
+#
+#     DB=/tmp/comments.db STORAGE=sqlite ./server/comments.rb
+#
 #
 # Steve
 # --
@@ -47,66 +55,61 @@ require 'json'
 #  Attempt to load both "redis" and "sqlite3", it doesn't matter if
 # one of them fails so long as the other succeeds!
 #
-begin
-  require 'redis'
-rescue LoadError
-  puts "Failed to load the redis library"
+%w( redis sqlite3 ).each do |library|
+  begin
+    require library
+  rescue LoadError
+    puts "Failed to load the library: #{library}"
+  end
 end
-begin
-  require 'sqlite3'
-rescue LoadError
-  puts "Failed to load the sqlite3 library"
-end
-
 
 
 #
 #  This is an abstraction layer between the Sinatra application
 # and the storage the user has chosen.
 #
-#  We can talk to either redis or sqlite3.
-#
-#  The user will specify which one by setting the environmental
-# variable "STORAGE" to the value "redis" or "sqlite".
-#
-#  In the case of sqlite being selected the second variable "DB"
-# will specify the path to the database on-disk.
-#
-#
-#  NOTE:  This would be better written as a class-factory.
-#
-#         Pull-requests welcome ;)
-#
-class BackEnd
+class Backend
 
   #
-  #  Handle to either Redis or an Sqlite database
+  # Class-Factory
   #
-  attr_reader :redis, :sqlite
+  def self.create type
+    case type
+    when "sqlite"
+      SQLiteBackend.new
+    when "redis"
+      RedisBackend.new
+    else
+      raise "Bad backend type: #{type}"
+    end
+  end
+
+  def get( id )
+    raise "Subclasses must implement this method"
+  end
+
+  def set( id, values )
+    raise "Subclasses must implement this method"
+  end
+
+end
+
+
+#
+# An SQLite backend.
+#
+# This stores comments in a simple SQLite database, on-disk.
+#
+class SQLiteBackend < Backend
 
   #
-  #  Constructor
+  # Constructor.
   #
-  def initialize( method )
+  def initialize
+    db = ENV["DB"] || "storage.db"
+    @sqlite = SQLite3::Database.open db
 
-    @sqlite = nil
-    @redis  = nil
-
-    if ( method == "redis" )
-      #
-      #  Create Redis handle, if that is the users' choice
-      #
-      @redis  = Redis.new( :host => "127.0.0.1" );
-
-    elsif ( method == "sqlite" )
-
-      #
-      # Create an SQLite database.
-      #
-      db = ENV["DB"] || "storage.db"
-      @sqlite = SQLite3::Database.open db
-
-      begin
+    begin
         @sqlite.execute <<SQL
   CREATE TABLE store (
    idx INTEGER PRIMARY KEY,
@@ -114,57 +117,76 @@ class BackEnd
    content String
   );
 SQL
-      rescue => e
-        #
-        #  Error here is expected if the table exists.
-        #
-        #  Other errors are silently masked which is perhaps a shame.
-        #
-      end
-    else
-      raise "Unknown backend: #{method}"
-    end
-  end
-
-
-  #
-  # Get values from either redis or sqlite
-  #
-  def get( id )
-
-    if (  @redis )
-      return redis.smembers( "comments-#{id}" )
-    end
-
-    if ( @sqlite )
-
-      stm = @sqlite.prepare "SELECT content FROM store WHERE id = ?"
-      stm.bind_param 1, id
-
-      a = Array.new()
-      stm.execute.each do |item|
-        a.push( item[0] )
-      end
-      a
+    rescue => e
+      #
+      #  Error here is expected if the table exists.
+      #
+      #  Other errors are silently masked which is perhaps a shame.
+      #
     end
   end
 
   #
-  #  Add the content to the given ID in our store.
+  # Return an array of strings for the given ID.
+  #
+  def get(id)
+    stm = @sqlite.prepare( "SELECT content FROM store WHERE id = ?" )
+    stm.bind_param 1, id
+
+    a = Array.new()
+    stm.execute.each do |item|
+      a.push( item[0] )
+    end
+    a
+  end
+
+  #
+  #  Add a new string (of concatenated comment-data) to the given identifier.
   #
   def add( id, content )
-
-    if ( @redis )
-      @redis.sadd( "comments-#{id}",content )
-    end
-
-    if ( @sqlite )
-      @sqlite.execute( "INSERT INTO store (id,content) VALUES( ?, ? )",
-                       id, content )
-    end
+    @sqlite.execute( "INSERT INTO store (id,content) VALUES(?,?)",
+                     id, content )
   end
 
 end
+
+
+
+#
+# A redis-backend.
+#
+# This stores comments in a redis instance running on the localhost.
+#
+class RedisBackend < Backend
+
+
+  #
+  # Constructor.
+  #
+  def initialize
+    @redis  = Redis.new( :host => "127.0.0.1" );
+  end
+
+
+  #
+  # Return an array of strings for the given ID.
+  #
+  def get( id )
+    @redis.smembers( "comments-#{id}" )
+  end
+
+
+  #
+  #  Add a new string (of concatenated comment-data) to the given identifier.
+  #
+  def add( id, content )
+    @redis.sadd( "comments-#{id}",content )
+  end
+
+end
+
+
+
 
 
 
@@ -192,8 +214,9 @@ class CommentStore < Sinatra::Base
   def initialize
     super
     storage = ENV["STORAGE"] || "redis"
-    @storage = BackEnd.new(storage)
+    @storage = Backend.create(storage)
   end
+
 
   #
   # Simple method to work out how old a comment-was.
@@ -216,7 +239,7 @@ class CommentStore < Sinatra::Base
 
   #
   # Posting a hash of author + body, with a given ID will
-  # appends a simplified version of the comment to a redis set.
+  # append a simplified version of the comment to the storage-backend.
   #
   post '/comments/:id' do
     author = params[:author]
@@ -249,8 +272,8 @@ class CommentStore < Sinatra::Base
   end
 
   #
-  #  Get the comments associated with a given ID, sorted
-  # by the date - oldest first.
+  #  Get the comments associated with a given ID, sorted by the date
+  # (oldest first).
   #
   get '/comments/:id' do
     id = params[:id]
@@ -261,7 +284,6 @@ class CommentStore < Sinatra::Base
     #  Get the members of the set.
     #
     values = @storage.get( id )
-
 
     i = 1
 
@@ -305,6 +327,8 @@ class CommentStore < Sinatra::Base
   end
 
 end
+
+
 
 #
 # Launch the server
