@@ -12,7 +12,10 @@ Comment Server
 --------------
 
 The comment server is written using [sinatra](http://www.sinatrarb.com/),
-and stores the comments in a [Redis](http://redis.io/) store.
+and has two choices for storing the actual comment data:
+
+* A [Redis server](http://redis.io/).
+* An SQLite database.
 
 The server implements a simple API in two methods:
 
@@ -23,6 +26,18 @@ The server implements a simple API in two methods:
 * `POST /comments/ID`
    * Store a new comment against the given ID
    * The submission should have the fields `author` and `body`.
+
+Assuming you have the appropriate library available you should specify
+your preferred storage like so:
+
+     $ STORAGE=redis ./server/comments.rb
+
+Or:
+
+     $ STORAGE=sqlite ./server/comments.rb
+
+When SQLite is chosen the database can be set to an explicit path via the
+DB variable.
 
 
 Client-Side Inclusion

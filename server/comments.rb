@@ -37,17 +37,145 @@
 
 
 require 'sinatra'
-require 'redis'
 require 'json'
 
 
+#
+#  Attempt to load both "redis" and "sqlite3", it doesn't matter if
+# one of them fails so long as one succeeds.
+#
+begin
+  require 'redis'
+rescue => e
+  puts "Failed to load the redis library"
+end
+begin
+  require 'sqlite3'
+rescue => e
+  puts "Failed to load the sqlite3 library"
+end
+
+
+
+#
+#  This is an abstraction layer betweent the Sinatra application
+# and the backing-store.
+#
+#  Here we can talk to either redis or sqlite3.
+#
+#  The user will specify which one by setting the environmental
+# variable "STORAGE" to the value "redis" or "sqlite".
+#
+class BackEnd
+  #
+  #  Handle to either Redis or an Sqlite database
+  #
+  attr_reader :redis, :sqlite
+
+  #
+  #  Constructor
+  #
+  def initialize( method )
+
+    @sqlite = nil
+    @redis  = nil
+
+    #
+    #  Create Redis handle, if that is the users' choice
+    #
+    if ( method == "redis" )
+      @redis  = Redis.new( :host => "127.0.0.1" );
+
+    elsif ( method == "sqlite" )
+
+      #
+      # Create an SQLite database.
+      #
+      db = ENV["DB"] || "storage.db"
+      @sqlite = SQLite3::Database.open db
+
+      begin
+        @sqlite.execute <<SQL
+  CREATE TABLE store (
+   idx INTEGER PRIMARY KEY,
+   id  VARCHAR(255),
+   content String
+  );
+SQL
+      rescue => e
+      end
+    else
+      raise "Unknown backend: #{method}"
+    end
+  end
+
+
+  #
+  # Get values from either redis or sqlite
+  #
+  def get( id )
+
+    if (  @redis )
+      return redis.smembers( "comments-#{id}" )
+    end
+
+    if ( @sqlite )
+
+      stm = @sqlite.prepare "SELECT content FROM store WHERE id = ?"
+      stm.bind_param 1, id
+
+      a = Array.new()
+      stm.execute.each do |item|
+        a.push( item[0] )
+      end
+      a
+    end
+  end
+
+  #
+  #  Add content for the given ID from either redis or sqlite
+  #
+  def add( id, content )
+
+    if ( @redis )
+      @redis.sadd( "comments-#{id}",content )
+    end
+
+    if ( @sqlite )
+      @sqlite.execute( "insert into store (id,content) VALUES( ?, ? )", id, content )
+    end
+  end
+
+end
+
+
+
+
+#
+#  The API.
+#
 class CommentStore < Sinatra::Base
+
+  #
+  # Backend Storage
+  #
+  attr_reader :storage
 
   #
   # Listen on 127.0.0.1:9393
   #
   set :bind, "127.0.0.1"
   set :port, 9393
+
+
+  #
+  # Create the back-end storage object.
+  #
+  def initialize
+    super
+    storage = ENV["STORAGE"] || "sqlite"
+    @storage = BackEnd.new(storage)
+  end
 
   #
   # Simple method to work out how old a comment-was.
@@ -89,8 +217,7 @@ class CommentStore < Sinatra::Base
       #
       #  Add to the set.
       #
-      @redis = Redis.new( :host => "127.0.0.1" );
-      @redis.sadd( "comments-#{id}",content )
+      @storage.add( id, content )
 
       #
       #  All done
@@ -113,8 +240,7 @@ class CommentStore < Sinatra::Base
     #
     #  Get the members of the set.
     #
-    @redis = Redis.new( :host => "127.0.0.1" );
-    values = @redis.smembers( "comments-#{id}" )
+    values = @storage.get( id )
 
 
     i = 1
