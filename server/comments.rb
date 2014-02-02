@@ -205,7 +205,9 @@ class CommentStore < Sinatra::Base
     body   = params[:body]
     id     = params[:id]
 
-    if ( author && body && id )
+    if ( author && ( author.length > 0 ) &&
+         body &&  ( body.length > 0 ) &&
+        id )
 
       ip = request.ip
 
@@ -257,8 +259,8 @@ class CommentStore < Sinatra::Base
       result << { :time => time,
         :ago => time_in_words(time),
         :ip => ip,
-        :author => CGI.escapeHTML(author),
-        :body => CGI.escapeHTML(body) }
+        :author => CGI.escapeHTML(author || ""),
+        :body => CGI.escapeHTML(body|| "") }
       i += 1
     end
 
