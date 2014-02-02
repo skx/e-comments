@@ -39,7 +39,7 @@
 # --
 
 
-require 'sinatra'
+require 'sinatra/base'
 require 'json'
 
 
