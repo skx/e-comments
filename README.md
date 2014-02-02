@@ -37,7 +37,9 @@ Or:
      $ STORAGE=sqlite ./server/comments.rb
 
 When SQLite is chosen the database can be set to an explicit path via the
-DB variable.
+DB variable:
+
+     $ DB=/tmp/comments.db STORAGE=sqlite ./server/comments.rb
 
 
 Client-Side Inclusion
