@@ -41,6 +41,13 @@ DB variable:
 
      $ DB=/tmp/comments.db STORAGE=sqlite ./server/comments.rb
 
+**NOTE** The server will bind to `127.0.0.1:9393` by default, so you
+will need to place a suitable proxy in front of it if you wish it to
+be available.
+
+**NOTE** You need to expose http://comments.exaimple.com/comments/ to
+the outside world if client-browsers are going to connect to add/view comments.
+
 
 Client-Side Inclusion
 ---------------------
@@ -56,6 +63,11 @@ following in your HTML HEAD section:
         discussion( "http://server.name/comments/id" );
     });
     </script>
+
+Then inside your body somewhere place the following:
+
+    <div id="comments"></div>
+
 
 The `discussion()` method accepts a single argument, the URL of the comment-server you've got running.  Including the ID of the discussions to include.
 

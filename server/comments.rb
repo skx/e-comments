@@ -5,8 +5,9 @@
 # It was originally designed to work on the http://tweaked.io/ site
 # but there is nothing specific to that site here.
 #
-# The only dependencies are a Redis server running on localhost, and the
-# appropriate Ruby packages to run sinatra
+# The only dependencies are either the Redis client libraries, and a
+# Redis server running on localhost, or the SQLite libraries and a writeable
+# path somewhere.
 #
 #
 #
@@ -31,6 +32,8 @@
 # ----------
 #   Run this on a host such as comments.example.com, behind nginx, or similar.
 #
+#   NOTE: By default the server will bind to 127.0.0.1:9393
+#
 #
 # Steve
 # --
@@ -42,7 +45,7 @@ require 'json'
 
 #
 #  Attempt to load both "redis" and "sqlite3", it doesn't matter if
-# one of them fails so long as one succeeds.
+# one of them fails so long as the other succeeds!
 #
 begin
   require 'redis'
@@ -58,15 +61,19 @@ end
 
 
 #
-#  This is an abstraction layer betweent the Sinatra application
-# and the backing-store.
+#  This is an abstraction layer between the Sinatra application
+# and the storage the user has chosen.
 #
-#  Here we can talk to either redis or sqlite3.
+#  We can talk to either redis or sqlite3.
 #
 #  The user will specify which one by setting the environmental
 # variable "STORAGE" to the value "redis" or "sqlite".
 #
+#  In the case of sqlite being selected the second variable "DB"
+# will specify the path to the database on-disk.
+#
 class BackEnd
+
   #
   #  Handle to either Redis or an Sqlite database
   #
@@ -80,10 +87,10 @@ class BackEnd
     @sqlite = nil
     @redis  = nil
 
-    #
-    #  Create Redis handle, if that is the users' choice
-    #
     if ( method == "redis" )
+      #
+      #  Create Redis handle, if that is the users' choice
+      #
       @redis  = Redis.new( :host => "127.0.0.1" );
 
     elsif ( method == "sqlite" )
@@ -103,6 +110,11 @@ class BackEnd
   );
 SQL
       rescue => e
+        #
+        #  Error here is expected if the table exists.
+        #
+        #  Other errors are silently masked which is perhaps a shame.
+        #
       end
     else
       raise "Unknown backend: #{method}"
@@ -142,7 +154,8 @@ SQL
     end
 
     if ( @sqlite )
-      @sqlite.execute( "insert into store (id,content) VALUES( ?, ? )", id, content )
+      @sqlite.execute( "INSERT INTO store (id,content) VALUES( ?, ? )",
+                       id, content )
     end
   end
 
@@ -152,7 +165,7 @@ end
 
 
 #
-#  The API.
+#  The actual Sinatra-based API.
 #
 class CommentStore < Sinatra::Base
 
