@@ -46,12 +46,12 @@ require 'json'
 #
 begin
   require 'redis'
-rescue => e
+rescue LoadError
   puts "Failed to load the redis library"
 end
 begin
   require 'sqlite3'
-rescue => e
+rescue LoadError
   puts "Failed to load the sqlite3 library"
 end
 
@@ -173,7 +173,7 @@ class CommentStore < Sinatra::Base
   #
   def initialize
     super
-    storage = ENV["STORAGE"] || "sqlite"
+    storage = ENV["STORAGE"] || "redis"
     @storage = BackEnd.new(storage)
   end
 
