@@ -72,6 +72,11 @@ end
 #  In the case of sqlite being selected the second variable "DB"
 # will specify the path to the database on-disk.
 #
+#
+#  NOTE:  This would be better written as a class-factory.
+#
+#         Pull-requests welcome ;)
+#
 class BackEnd
 
   #
@@ -145,7 +150,7 @@ SQL
   end
 
   #
-  #  Add content for the given ID from either redis or sqlite
+  #  Add the content to the given ID in our store.
   #
   def add( id, content )
 
