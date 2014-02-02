@@ -84,12 +84,18 @@ class Backend
     end
   end
 
+  #
+  # Return an array of strings for the given ID.
+  #
   def get( id )
-    raise "Subclasses must implement this method"
+    raise "Subclasses must implement this method!"
   end
 
+  #
+  # Add a new string (of concatenated comment-data) to the given identifier.
+  #
   def set( id, values )
-    raise "Subclasses must implement this method"
+    raise "Subclasses must implement this method!"
   end
 
 end
@@ -110,7 +116,7 @@ class SQLiteBackend < Backend
     @sqlite = SQLite3::Database.open db
 
     begin
-        @sqlite.execute <<SQL
+      @sqlite.execute <<SQL
   CREATE TABLE store (
    idx INTEGER PRIMARY KEY,
    id  VARCHAR(255),
@@ -120,11 +126,11 @@ SQL
     rescue => e
       #
       #  Error here is expected if the table exists.
-      #
-      #  Other errors are silently masked which is perhaps a shame.
+      #  Other errors are silently masked which is perhaps a mistake.
       #
     end
   end
+
 
   #
   # Return an array of strings for the given ID.
@@ -141,11 +147,10 @@ SQL
   end
 
   #
-  #  Add a new string (of concatenated comment-data) to the given identifier.
+  # Add a new string (of concatenated comment-data) to the given identifier.
   #
   def add( id, content )
-    @sqlite.execute( "INSERT INTO store (id,content) VALUES(?,?)",
-                     id, content )
+    @sqlite.execute( "INSERT INTO store (id,content) VALUES(?,?)", id, content )
   end
 
 end
@@ -177,7 +182,7 @@ class RedisBackend < Backend
 
 
   #
-  #  Add a new string (of concatenated comment-data) to the given identifier.
+  # Add a new string (of concatenated comment-data) to the given identifier.
   #
   def add( id, content )
     @redis.sadd( "comments-#{id}",content )
@@ -209,12 +214,11 @@ class CommentStore < Sinatra::Base
 
 
   #
-  # Create the back-end storage object.
+  # Create the backend storage object.
   #
   def initialize
     super
-    storage = ENV["STORAGE"] || "redis"
-    @storage = Backend.create(storage)
+    @storage = Backend.create(ENV["STORAGE"] || "redis")
   end
 
 
@@ -248,7 +252,7 @@ class CommentStore < Sinatra::Base
 
     if ( author && ( author.length > 0 ) &&
          body &&  ( body.length > 0 ) &&
-        id )
+         id )
 
       ip = request.ip
 
@@ -270,6 +274,7 @@ class CommentStore < Sinatra::Base
 
     halt 500, "Missing field(s)"
   end
+
 
   #
   #  Get the comments associated with a given ID, sorted by the date
@@ -316,6 +321,7 @@ class CommentStore < Sinatra::Base
     # now return a JSONP-friendly result.
     "comments(#{json})";
   end
+
 
   #
   # If the user hits an end-point we don't recognize then
