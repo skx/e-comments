@@ -5,7 +5,7 @@ This repository contains a simple server used to store comments, and
 an associated Javascript file which allows you to include comments
 in your static-pages.
 
-This is a self-hosted alternative to using discus.
+This is a self-hosted alternative to using disqus.
 
 
 Comment Server
