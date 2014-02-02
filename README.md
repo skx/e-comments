@@ -53,5 +53,12 @@ And a different page might include:
 This ensures that both pages show distinct comments, and there is no confusion.
 
 
+Online Demo
+-----------
+
+There is a live online demo you can view here:
+
+* http://www.steve.org.uk/Software/e-comments/demo.html
+
 Steve
 --
