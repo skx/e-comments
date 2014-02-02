@@ -1,0 +1,44 @@
+
+div.comment {
+	border-left: 1px solid #ddd;/*1px solid rgb(128, 128, 128);*/
+	border-right: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+        background-color: white;
+        margin: 10px 0px;
+
+}
+
+div.comment div.body {
+	padding: 10px 10px;
+        border-bottom: 1px solid #ddd;
+}
+
+div.comment .title {
+        background-color: #ddd;
+	font-weight: bold;
+	font-size: 110%;
+	padding: 5px;
+
+}
+
+div.comment .title a {
+        color: black !important;
+}
+
+div.comment .title a:hover {
+        color: black !important;
+}
+
+div.comment .link {
+	float: right;
+        padding-top: 0.25ex;
+        padding-right: 0.5em;
+}
+
+div.comment div.tagline {
+        text-align: right;
+	border-bottom: 1px solid #ddd;
+	font-size: 96%;
+	padding: 0.26ex 10px !important;
+}
