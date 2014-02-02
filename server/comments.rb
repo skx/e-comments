@@ -255,12 +255,18 @@ class CommentStore < Sinatra::Base
       # tokenize.
       ip,time,author,body = str.split("|")
 
+      author = CGI.escapeHTML(author || "")
+      body   = CGI.escapeHTML(body   || "")
+
+      body = body.gsub( /\n\n/, "<p>" )
+      body = body.gsub( /\r\n\r\n/, "<p>" )
+
       # Add the values to our array of hashes
       result << { :time => time,
         :ago => time_in_words(time),
         :ip => ip,
-        :author => CGI.escapeHTML(author || ""),
-        :body => CGI.escapeHTML(body|| "") }
+        :author => author,
+        :body => body }
       i += 1
     end
 
