@@ -14,11 +14,21 @@ Comment Server
 The comment server is written using [sinatra](http://www.sinatrarb.com/),
 and stores the comments in a [Redis](http://redis.io/) store.
 
+The server implements a simple API in two methods:
+
+* `GET /comments/ID`
+   * This retrieves the comments associated with the given ID.
+   * The return value is an array of hashes.
+   * The hashes have keys such as  `author`, `body` & `ip`.
+* `POST /comments/ID`
+   * Store a new comment against the given ID
+   * The submission should have the fields `author` and `body`.
+
 
 Client-Side Inclusion
 ---------------------
 
-Including comments in your site is a simple as including the
+Including comments in a static-page on your site is a simple as including the
 following in your HTML HEAD section:
 
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -30,7 +40,17 @@ following in your HTML HEAD section:
     });
     </script>
 
+The `discussion()` method accepts a single argument, the URL of the comment-server you've got running.  Including the ID of the discussions to include.
 
+So one page might have:
+
+        discussion( "http://server.name/comments/home" );
+
+And a different page might include:
+
+        discussion( "http://server.name/comments/about" );
+
+This ensures that both pages show distinct comments, and there is no confusion.
 
 
 Steve
