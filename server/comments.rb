@@ -49,7 +49,7 @@
 
 require 'sinatra/base'
 require 'json'
-
+require 'redcarpet'
 
 #
 #  Attempt to load both "redis" and "sqlite3", it doesn't matter if
@@ -290,6 +290,11 @@ class CommentStore < Sinatra::Base
     #
     values = @storage.get( id )
 
+    #
+    # Markdown object.
+    #
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :autolink => true, :no_intra_emphasis => true, :filter_html => true)
+
     i = 1
 
     #
@@ -301,10 +306,13 @@ class CommentStore < Sinatra::Base
       ip,time,author,body = str.split("|")
 
       author = CGI.escapeHTML(author || "")
-      body   = CGI.escapeHTML(body   || "")
 
-      body = body.gsub( /\n\n/, "<p>" )
-      body = body.gsub( /\r\n\r\n/, "<p>" )
+      #
+      # Note the options to the Markdown constructor
+      # protect us against XSS.
+      #
+      body = markdown.render( body )
+
 
       # Add the values to our array of hashes
       result << { :time => time,
