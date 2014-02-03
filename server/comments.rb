@@ -293,7 +293,19 @@ class CommentStore < Sinatra::Base
     #
     # Markdown object.
     #
-    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, :autolink => true, :no_intra_emphasis => true, :filter_html => true)
+    options = {
+      filter_html: true,
+      safe_links_only: true,
+      hard_wrap: true,
+      link_attributes: { rel: "nofollow" },
+    }
+    extensions = {
+      autolink: true,
+      no_intra_emphasis: true
+    }
+
+    renderer = Redcarpet::Render::HTML.new(options)
+    markdown = Redcarpet::Markdown.new(renderer, extensions)
 
     i = 1
 
