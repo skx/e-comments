@@ -80,23 +80,53 @@ class CommentStore < Sinatra::Base
     @storage = Backend.create(ENV["STORAGE"] || "redis")
   end
 
+  #
+  # Format the given number of seconds into something more friendly.
+  #
+  def seconds_to_ago( a )
+    case a
+    when 0 then
+      'just now'
+    when 1 then
+      'a second ago'
+    when 2..59 then
+      a.to_s+' seconds ago'
+    when 60..119 then
+      'a minute ago' #120 = 2 minutes
+    when 120..3540 then
+      (a/60).to_i.to_s+' minutes ago'
+    when 3541..7100 then
+      'an hour ago' # 3600 = 1 hour
+    when 7101..82800 then
+      ((a+99)/3600).to_i.to_s+' hours ago'
+    when 82801..172000 then
+      'a day ago' # 86400 = 1 day
+    when 172001..518400 then
+      ((a+800)/(60*60*24)).to_i.to_s+' days ago'
+    when 518400..1036800 then
+      'a week ago'
+    else
+      ((a+180000)/(60*60*24*7)).to_i.to_s+' weeks ago'
+    end
+  end
+
 
   #
-  # Simple method to work out how old a comment-was.
+  # Given a date-string such as "2014-02-03 17:22:13 +0000" work out
+  # how long ago that was.
   #
-  def time_in_words(date)
-    date = Date.parse(date, true) unless /Date.*/ =~ date.class.to_s
-    days = (date - Date.today).to_i
+  def time_ago( str )
+    # convert the given date to seconds-since-epoch
+    past = Time.parse(str).to_i
 
-    return 'today'     if days >= 0 and days < 1
-    return 'tomorrow'  if days >= 1 and days < 2
-    return 'yesterday' if days >= -1 and days < 0
+    # convert the current date to seconds-since-epoch
+    now = Time.now.to_i
 
-    return "in #{days} days"      if days.abs < 60 and days > 0
-    return "#{days.abs} days ago" if days.abs < 60 and days < 0
+    # Calculate the time-different in seconds.
+    seconds = now - past
 
-    return date.strftime('%A, %B %e') if days.abs < 182
-    return date.strftime('%A, %B %e, %Y')
+    # format that
+    seconds_to_ago( seconds )
   end
 
 
@@ -187,7 +217,7 @@ class CommentStore < Sinatra::Base
 
       # Add the values to our array of hashes
       result << { :time => time,
-        :ago => time_in_words(time),
+        :ago => time_ago(time),
         :ip => ip,
         :author => author,
         :body => body }
