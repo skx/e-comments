@@ -1,11 +1,24 @@
 External Comments
 =================
 
-This repository contains a simple server used to store comments, and
-an associated Javascript file which allows you to include comments
-in your static-pages.
+This is an open source commenting system, allowing you to include
+comments on your static website(s) without the privacy concerns of
+using an external system such as disqus.
 
-This is a self-hosted alternative to using disqus.
+Embedding comments is as simple as including a 4k Javascript file,
+(1k when minified) and a CSS file for styling.
+
+Features:
+
+* Markdown formatting for your visitors.
+* Multiple backends for storage:
+   * Redis
+   * SQlite
+   * Adding new backends is simple.
+* Simplicity
+   * The code is small enough to easily understand and extend for your custom needs, but functional as-is.
+* Degrades gracefully when Javascript is disabled
+   * No white boxes, empty spaces, or error-messages.
 
 
 Comment Server
@@ -22,7 +35,7 @@ and has two choices for storing the actual comment data:
 
 #### Comment Server API
 
-The server implements a simple API in two methods:
+The server implements the following two API methods:
 
 * `GET /comments/ID`
    * This retrieves the comments associated with the given ID.
@@ -53,7 +66,7 @@ Or
 #### Comment Server Deployment
 
 Assuming you have the appropriate library available you should specify
-your preferred storage like so:
+your preferred storage mechanism like so:
 
      $ STORAGE=redis ./server/comments.rb
 
