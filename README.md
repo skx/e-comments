@@ -79,6 +79,10 @@ DB variable:
 
      $ DB=/tmp/comments.db STORAGE=sqlite ./server/comments.rb
 
+As a shortcut you may prefer:
+
+     $ ./server/comments.rb --redis | --sqlite=/tmp/foo.db
+
 **NOTE** The server will bind to `127.0.0.1:9393` by default, so you
 will need to place a suitable proxy in front of it if you wish it to
 be available.
