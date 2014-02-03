@@ -32,73 +32,67 @@
 // Steve
 // --
 //
-
-
 //
 // Load the comments by making a JSONP request to the given URL.
 //
 // The comments will invoke the `comments(data)` function, when loaded.
 //
-function loadComments(url)
-{
+function loadComments(url) {
     $.ajax({
         url: url + "?callback=?",
-        dataType:'jsonp',
-        crossDomain:true,
-	complete: (function(){populateReplyForm(url);})
+        dataType: 'jsonp',
+        crossDomain: true,
+        complete: (function() {
+            populateReplyForm(url);
+        })
     });
 }
-
 
 //
 // Called when the JSONP data is loaded.
 //
-function comments(data)
-{
+function comments(data) {
     //
     // We're given a DIV with ID comments.  Empty it.
     //
     //
-    $("#comments").html( "" );
+    $("#comments").html("");
     id = 1
 
     //
     // If there are some comments we should post a header.
     //
-    if ( data.length > 0 )
-    {
-        $("#comments").prepend( "<h2>Comments</h2>");
+    if (data.length > 0) {
+        $("#comments").prepend("<h2>Comments</h2>");
     }
 
-    $.each(data,function( key,val) {
+    $.each(data, function(key, val) {
 
         //
         //  The variables from the comment
         //
         var author = val["author"];
-        var body   = val["body"];
-        var ago    = val["ago"];
+        var body = val["body"];
+        var ago = val["ago"];
 
-        $("#comments").append( "<div class=\"comment\"> \
+        $("#comments").append("<div class=\"comment\"> \
 <div class=\"link\"><a href=\"#comment_" + id + "\">#</a></div> \
 <div class=\"title\"><a name=\"comment_" + id + "\">Author: " + author + "</a></div> \
 <div class=\"tagline\">" + ago + "<br /></div> \
 <div class=\"body\">" + body + "</div> \
-</div>" );
-	id += 1;
+</div>");
+        id += 1;
     });
 }
-
 
 //
 // Generate the reply-form for users to add comments.
 //
-function populateReplyForm( url )
-{
+function populateReplyForm(url) {
     //
     //  Once the comments are loaded we can populate the reply-area.
     //
-    $("#comments").append("<div id=\"comments-reply\"></div>" );
+    $("#comments").append("<div id=\"comments-reply\"></div>");
 
     //
     //  This is unpleasant.
@@ -127,27 +121,25 @@ function populateReplyForm( url )
     //
     // Capture form-submissions.
     //
-    $("#myform").bind( "submit",(function() {
+    $("#myform").bind("submit", (function() {
 
         //
         // Hide the form when submitting.
         //
-	$("#myform").hide();
+        $("#myform").hide();
 
         //
         // Send the POST
         //
-	$.ajax({
+        $.ajax({
             type: "POST",
             url: url,
             data: $("#myform").serialize(),
-            error: function(r,e)
-            {
-		loadComments( url);
+            error: function(r, e) {
+                loadComments(url);
             },
-            complete: function(r,e)
-            {
-		loadComments( url );
+            complete: function(r, e) {
+                loadComments(url);
             },
             datatype: 'jsonp',
         })
@@ -165,15 +157,10 @@ function populateReplyForm( url )
 //  e.g. http://comments.example.com/comments/apache
 //
 //
-function discussion(  url )
-{
+function discussion(url) {
     //
     //  Load the comments, and populate the <div id="comments"> area with them
     //
-    loadComments( url )
+    loadComments(url)
 
 }
-
-
-
-
