@@ -20,7 +20,7 @@ and has two choices for storing the actual comment data:
 
 
 
-### Comment Server API
+#### Comment Server API
 
 The server implements a simple API in two methods:
 
@@ -33,7 +33,24 @@ The server implements a simple API in two methods:
    * The submission should have the fields `author` and `body`.
 
 
-### Comment Server Deployment
+#### Comment Server Dependencies
+
+These dependencies were tested on a Debian GNU/Linux stable machine,
+but are a good starting point for other distributions:
+
+    apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet
+
+For storage you get to choose between on of these two alternatives:
+
+    apt-get install libsqlite3-ruby
+
+Or
+
+    apt-get install rubygems
+    gem install sinatra
+
+
+#### Comment Server Deployment
 
 Assuming you have the appropriate library available you should specify
 your preferred storage like so:
