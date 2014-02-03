@@ -51,6 +51,7 @@ require 'getoptlong'
 require 'json'
 require 'redcarpet'
 require 'sinatra/base'
+require 'time'
 
 require './server/backends.rb'
 
