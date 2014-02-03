@@ -186,7 +186,7 @@ class CommentStore < Sinatra::Base
     values = @storage.get( id )
 
     #
-    # Markdown object.
+    # Markdown renderer options.
     #
     options = {
       filter_html: true,
@@ -194,6 +194,10 @@ class CommentStore < Sinatra::Base
       hard_wrap: true,
       link_attributes: { rel: "nofollow" },
     }
+
+    #
+    # Markdown extensions.
+    #
     extensions = {
       autolink: true,
       no_intra_emphasis: true
@@ -223,6 +227,14 @@ class CommentStore < Sinatra::Base
         # protect us against XSS.
         #
         body = markdown.render( body )
+
+        #
+        # Add 'rel="nofollow"' to all links.  The markdown arguments
+        # should do that, but they do not.
+        #
+        body.gsub!( /href=/, "rel=\"nofollow\" href=" )
+
+
 
 
         # Add the values to our array of hashes
