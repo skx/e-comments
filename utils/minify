@@ -1,0 +1,81 @@
+#!/usr/bin/perl
+#
+# Simple script to minify the client-side javascript.
+#
+# Steve
+# --
+#
+
+
+use strict;
+use warnings;
+
+
+#
+# Ensure we have the library that does the work.
+#
+eval( "use JavaScript::Minifier qw(minify);" );
+if ( $@ )
+{
+    print "You do not have the JavaScript::Minifier library present.\n";
+    print "Install via: apt-get install  libjavascript-minifier-perl\n";
+    exit(1);
+}
+
+
+#
+# Find the path to the javascript we'll minify.
+#
+my $input = input();
+if ( !$input )
+{
+    print "Failed to find input file to minify.  Aborting\n";
+    exit(1);
+}
+
+#
+# Determine the output file by replacing ".js" with ".min.js".
+#
+my $output = $input;
+$output =~ s/\.js$/.min.js/g;
+
+
+#
+# Open the input & output
+#
+open( my $fin, "<", $input ) or
+  die "Failed to open file for input $input - $!";
+
+open( my $fout, ">", $output ) or
+  die "Failed to open file for output $output - $!";
+
+
+#
+#  Minify
+#
+minify( input => $fin, outfile => $fout );
+
+#
+#  Cleanup
+#
+close($fin);
+close($fout);
+
+#
+#  All done.
+#
+exit(0);
+
+
+#
+#  Find the path we'll minify.
+#
+sub input
+{
+    foreach
+      my $attempt (qw! client/js/e-comments.js ../client/js/e-comments.js!)
+    {
+        return $attempt if ( -e $attempt );
+    }
+    return undef;
+}
