@@ -147,6 +147,11 @@ class CommentStore < Sinatra::Base
       ip = request.ip
 
       #
+      #  Avoid injection of "|" in author-name
+      #
+      author.gsub!( /\|/, " " )
+
+      #
       #  Trivial stringification.
       #
       content = "#{ip}|#{Time.now}|#{author}|#{body}"
@@ -205,24 +210,29 @@ class CommentStore < Sinatra::Base
     values.each do |str|
 
       # tokenize.
-      ip,time,author,body = str.split("|")
+      if ( str =~ /^([^|]+)\|([^|]+)\|([^|]+)\|(.*)/ )
+        ip     = $1.dup
+        time   = $2.dup
+        author = $3.dup
+        body   = $4.dup
 
-      author = CGI.escapeHTML(author || "")
+        author = CGI.escapeHTML(author || "")
 
-      #
-      # Note the options to the Markdown constructor
-      # protect us against XSS.
-      #
-      body = markdown.render( body )
+        #
+        # Note the options to the Markdown constructor
+        # protect us against XSS.
+        #
+        body = markdown.render( body )
 
 
-      # Add the values to our array of hashes
-      result << { :time => time,
-        :ago => time_ago(time),
-        :ip => ip,
-        :author => author,
-        :body => body }
-      i += 1
+        # Add the values to our array of hashes
+        result << { :time => time,
+          :ago => time_ago(time),
+          :ip => ip,
+          :author => author,
+          :body => body }
+        i += 1
+      end
     end
 
     # sort to show most recent last.
