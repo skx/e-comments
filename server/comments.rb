@@ -214,7 +214,7 @@ class CommentStore < Sinatra::Base
     values.each do |str|
 
       # tokenize.
-      if ( str =~ /^([^|]+)\|([^|]+)\|([^|]+)\|(.*)/ )
+      if ( str =~ /^([^|]+)\|([^|]+)\|([^|]+)\|(.*)/m )
         ip     = $1.dup
         time   = $2.dup
         author = $3.dup
