@@ -11,6 +11,9 @@ Embedding comments is as simple as including a 4k Javascript file,
 Features:
 
 * Markdown formatting for your visitors.
+* Support for anti-spam plugins.
+   * Three simple plugins included as a demonstration.
+   * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
 * Multiple backends for storage:
    * Redis
    * SQlite
