@@ -144,56 +144,61 @@ class CommentStore < Sinatra::Base
   # append a simplified version of the comment to the storage-backend.
   #
   post '/comments/:id' do
+
     author = params[:author]
     body   = params[:body]
     id     = params[:id]
 
-    if ( author && ( author.length > 0 ) &&
-         body &&  ( body.length > 0 ) &&
-         id )
-
-      ip = request.ip
-
-      #
-      #  Avoid injection of "|" in author-name
-      #
-      author.gsub!( /\|/, " " )
-
-      #
-      #  Test for spam, via our plugins
-      #
-      obj = { :author => author, :body => body, :ip => ip, :site => request.host }
-
-      #
-      # Default to all comments being good.
-      #
-      spam = false
-
-      #
-      # Look for spam.
-      #
-      SpamPlugin.repository.each do |plugin|
-        spam = true if plugin.is_spam? obj
-      end
-
-
-      #
-      #  Trivial stringification.
-      #
-      content = "#{ip}|#{Time.now}|#{author}|#{body}"
-
-      #
-      #  Add to the set.
-      #
-      @storage.add( id, content ) unless( spam )
-
-      #
-      #  All done
-      #
-      status 204
+    #
+    # Explicitly alert on which parameters were missing.
+    #
+    if ( !body || ( !body.length ) )
+      halt 500, "Missing 'body'"
+    end
+    if ( !author || ( !author.length ) )
+      halt 500, "Missing 'author'"
+    end
+    if ( !id || (!id.length ) )
+      halt 500, "Missing 'ID'"
     end
 
-    halt 500, "Missing field(s)"
+    ip = request.ip
+
+    #
+    #  Avoid injection of "|" in author-name
+    #
+    author.gsub!( /\|/, " " )
+
+    #
+    #  Test for spam, via our plugins
+    #
+    obj = { :author => author, :body => body, :ip => ip, :site => request.host }
+
+    #
+    # Look for spam.
+    #
+    SpamPlugin.repository.each do |plugin|
+      if plugin.is_spam? obj
+        puts "Dropping comment as spam #{plugin.class} - #{obj.to_json}"
+        halt 500, "Dropping comment as spam #{plugin.class} - #{obj.to_json}"
+      end
+    end
+
+
+    #
+    #  Trivial stringification.
+    #
+    content = "#{ip}|#{Time.now}|#{author}|#{body}"
+
+    #
+    #  Add to the set.
+    #
+    @storage.add( id, content )
+
+    #
+    #  All done
+    #
+    status 204
   end
 
 
