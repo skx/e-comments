@@ -53,7 +53,15 @@ require 'redcarpet'
 require 'sinatra/base'
 require 'time'
 
+#
+# Our backends
+#
 require './server/backends.rb'
+
+#
+# Our anti-spam plugins
+#
+require './server/plugins.rb'
 
 
 #
@@ -152,6 +160,24 @@ class CommentStore < Sinatra::Base
       author.gsub!( /\|/, " " )
 
       #
+      #  Test for spam, via our plugins
+      #
+      obj = { :author => author, :body => body, :ip => ip, :site => request.host }
+
+      #
+      # Default to all comments being good.
+      #
+      spam = false
+
+      #
+      # Look for spam.
+      #
+      SpamPlugin.repository.each do |plugin|
+        spam = true if plugin.is_spam? obj
+      end
+
+
+      #
       #  Trivial stringification.
       #
       content = "#{ip}|#{Time.now}|#{author}|#{body}"
@@ -159,7 +185,7 @@ class CommentStore < Sinatra::Base
       #
       #  Add to the set.
       #
-      @storage.add( id, content )
+      @storage.add( id, content ) unless( spam )
 
       #
       #  All done
