@@ -76,11 +76,12 @@ function comments(data) {
         var ago = val["ago"];
 
         $("#comments").append("<div class=\"comment\"> \
-<div class=\"link\"><a href=\"#comment_" + id + "\">#</a></div> \
+<div class=\"link\"><a href=\"#comment_" + id + "\">#" + id + "</a></div> \
 <div class=\"title\"><a name=\"comment_" + id + "\">Author: " + author + "</a></div> \
-<div class=\"tagline\">" + ago + "<br /></div> \
+<div class=\"tagline\">Posted " + ago + ".</div> \
 <div class=\"body\">" + body + "</div> \
-</div>");
+</div><div class=\"comment-spacing\"></div>");
+
         id += 1;
     });
 }
