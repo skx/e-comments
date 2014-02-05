@@ -28,11 +28,13 @@ Comment Server
 --------------
 
 The comment server is written using [sinatra](http://www.sinatrarb.com/),
-and has two choices for storing the actual comment data:
+and currently contains two diffent choices for storing the actual comment data:
 
 * A [Redis server](http://redis.io/).
 * An SQLite database.
-* Adding new backends should be straight-forward.
+
+Adding new backends should be straight-forward, and pull-requests are
+welcome for MySQL, CouchDB, etc.
 
 
 
@@ -45,8 +47,10 @@ The server implements the following two API methods:
    * The return value is an array of hashes.
    * The hashes have keys such as  `author`, `body` & `ip`.
 * `POST /comments/ID`
-   * Store a new comment against the given ID
+   * Adds a new comment to the collection for the given ID.
    * The submission should have the fields `author` and `body`.
+   * Optionally the submission might contain the field `email`.
+       * If an email is stored a Gravitar field will be present in the retrieval, but the actual email address will not be sent back to avoid a privacy leak.
 
 
 #### Comment Server Dependencies
@@ -97,7 +101,7 @@ the outside world if client-browsers are going to connect to add/view comments.
 Client-Side Inclusion
 ---------------------
 
-Including comments in a static-page on your site is a simple as including the
+Including comments to the static-pages on your site is a simple as including the
 following in your HTML HEAD section:
 
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -113,6 +117,13 @@ Then inside your body somewhere place the following:
 
     <div id="comments"></div>
 
+
+You're free to restyle the comments, via edits to the `/css/e-comments.css`
+file, and I'm happy to accept updated themes/styles.
+
+Currently the "Reply to Comments" form is hardcoded in the javascript,
+which makes editing that more of a pain than it should be.  In the future
+we'll allow you to point to your own form.
 
 The `discussion()` method accepts a single argument, the URL of the comment-server you've got running.  Including the ID of the discussions to include.
 
