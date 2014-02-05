@@ -154,13 +154,13 @@ class CommentStore < Sinatra::Base
     #
     # Explicitly alert on which parameters were missing.
     #
-    if ( !body || ( !body.length ) )
+    if ( body.nil? || body.empty? )
       halt 500, "Missing 'body'"
     end
-    if ( !author || ( !author.length ) )
+    if ( author.nil? || author.empty? )
       halt 500, "Missing 'author'"
     end
-    if ( !id || (!id.length ) )
+    if ( id.nil? || id.empty? )
       halt 500, "Missing 'ID'"
     end
 
