@@ -171,10 +171,10 @@ function populateReplyForm(url,options) {
             url: url,
             data: $("#ecommentsreply").serialize(),
             error: function(r, e) {
-                loadComments(url);
+                loadComments(url, options);
             },
             complete: function(r, e) {
-                loadComments(url);
+                loadComments(url, options);
             },
             datatype: 'jsonp',
         })
