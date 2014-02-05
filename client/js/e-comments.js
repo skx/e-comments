@@ -108,6 +108,10 @@ function populateReplyForm(url) {
           <td><input type=\"text\" name=\"author\" /></td> \
         </tr> \
         <tr> \
+          <td>Your Email</td> \
+          <td><input type=\"text\" name=\"email\" /> (Optional)</td> \
+        </tr> \
+        <tr> \
           <td colspan=\"2\"><textarea name=\"body\" rows=\"5\" cols=\"50\"></textarea></td> \
         </tr> \
         <tr> \
