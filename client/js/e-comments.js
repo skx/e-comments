@@ -89,27 +89,23 @@ function comments(data) {
 //
 // Generate the reply-form for users to add comments.
 //
-function populateReplyForm(url,options) {
+function populateReplyForm(url, options) {
 
     //
     //  Once the comments are loaded we can populate the reply-area.
     //
-    if ( options && options["reply-placement"] )
-    {
-        if ( options["reply-placement"] == "above" )
-        {
+    if (options && options["reply-placement"]) {
+        if (options["reply-placement"] == "above") {
             $("#comments").prepend("<div id=\"comments-reply\"></div>");
         }
-        else if ( options["reply-placement"] == "below" )
-        {
+        else if (options["reply-placement"] == "below") {
             $("#comments").append("<div id=\"comments-reply\"></div>");
         }
         else {
-            alert("Illegal 'reply-placement' value.   You may only use 'above' or 'below'" );
+            alert("Illegal 'reply-placement' value.   You may only use 'above' or 'below'");
         }
     }
-    else
-    {
+    else {
         $("#comments").append("<div id=\"comments-reply\"></div>");
     }
 
@@ -118,12 +114,10 @@ function populateReplyForm(url,options) {
     //
     //  If so use it.
     //
-    if ( options && options["reply-div"] )
-    {
-        $("#comments-reply").html( $(options["reply-div"]).html() );
+    if (options && options["reply-div"]) {
+        $("#comments-reply").html($(options["reply-div"]).html());
     }
-    else
-    {
+    else {
         //
         //  This is unpleasant.
         //
