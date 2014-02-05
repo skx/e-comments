@@ -49,3 +49,4 @@ end
 # Load all our server-plugins.
 #
 Dir.glob("./server/plugins/**/*.rb").each{|f| require f}
+Dir.glob("./plugins/**/*.rb").each{|f| require f}

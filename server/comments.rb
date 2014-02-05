@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #
 # This is a Sinatra application for storing/retrieving comments.
 #
@@ -58,12 +58,12 @@ require 'time'
 #
 # Our backends
 #
-require './server/backends.rb'
+require_relative './backends.rb'
 
 #
 # Our anti-spam plugins
 #
-require './server/plugins.rb'
+require_relative './plugins.rb'
 
 
 #
