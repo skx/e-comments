@@ -1,0 +1,55 @@
+#!/usr/bin/perl -w
+#
+# Simple script to dump all the comments.
+#
+# Steve
+# --
+
+
+use strict;
+use warnings;
+
+use JSON;
+use Redis;
+
+
+#
+# Connect to Redis
+#
+my $r = new Redis();
+
+#
+# Get all keys of the name "comments-XX", which are the sets our
+# comments are members of.
+#
+foreach my $id ( $r->keys("comments-*") )
+{
+    print "Handling: $id\n";
+
+    my @a = ();
+
+    #
+    #  Each set-member is a JSON HASH.
+    #
+    #  Build up an array of all the (decoded) hashes.
+    #
+    foreach my $entry ( $r->smembers($id) )
+    {
+        my $h = from_json($entry);
+        push( @a, $h );
+    }
+
+    #
+    # Now sort those; oldest to most recent.
+    #
+    foreach my $item ( sort {( $a->{ 'time' } ) cmp( $b->{ 'time' } )} @a )
+    {
+
+        #
+        #  And print them out.
+        #
+        print "[$item->{'ip'}] $item->{'time'} $item->{'author'}\n";
+        print "\t" . $item->{ 'body' } . "\n";
+    }
+    print "\n\n";
+}
