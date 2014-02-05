@@ -117,17 +117,12 @@ Then inside your body somewhere place the following:
 
     <div id="comments"></div>
 
+The `discussion()` method accepts two arguments:
 
-You're free to restyle the comments, via edits to the `/css/e-comments.css`
-file, and I'm happy to accept updated themes/styles.
+* The URL of the comment-server you've got running, including the ID of the discussion to include.
+* An optional hash of options, which is used for customization.
 
-Currently the "Reply to Comments" form is hardcoded in the javascript,
-which makes editing that more of a pain than it should be.  In the future
-we'll allow you to point to your own form.
-
-The `discussion()` method accepts a single argument, the URL of the comment-server you've got running.  Including the ID of the discussions to include.
-
-So one page might have:
+For example one page might include comments like so:
 
         discussion( "http://server.name/comments/home" );
 
@@ -136,6 +131,36 @@ And a different page might include:
         discussion( "http://server.name/comments/about" );
 
 This ensures that both pages show distinct comments, and there is no confusion.
+
+
+
+#### Customization
+
+There are two different ways that you can customize the client-side comments:
+
+* Via CSS.
+* Via options passed to the `discussion` function.
+
+The comments which are retrieved from the comment-server are retrieved as
+a JSON-encoded array of hashes.  From there the client-side code will wrap
+the comments in some `<div class="xx"..>` wrappers, with the expectation
+that this will allow them to be styled differently.
+
+The basic formatting that exists by default is contained in
+the `/css/e-comments.css` file, and you can update that freely.
+
+The second means of customization is by passing a hash of options
+to the `discussions()` method.  Currently the following options are
+supported:
+
+|Parameter|Meaning|
+|---------|-------|
+|`reply-div`|If this value is present then the hardcoded "Add your comment" form is not used.  Instead the content of the specified DIV is displayed instead.|
+|`reply-placement`|This should be set to `before` or `after`, and will specify whether the reply-form will be displayed above or below the list of existing comments.|
+
+
+> **NOTE**: If you wish to use a custom reply form you **must** give the FORM the ID `ecommentsreply`.  (i.e. `<form id="ecommentsreply" ..>`)
+
 
 
 Online Demo

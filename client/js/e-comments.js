@@ -37,13 +37,13 @@
 //
 // The comments will invoke the `comments(data)` function, when loaded.
 //
-function loadComments(url) {
+function loadComments(url, options) {
     $.ajax({
         url: url + "?callback=?",
         dataType: 'jsonp',
         crossDomain: true,
         complete: (function() {
-            populateReplyForm(url);
+            populateReplyForm(url, options);
         })
     });
 }
@@ -89,19 +89,48 @@ function comments(data) {
 //
 // Generate the reply-form for users to add comments.
 //
-function populateReplyForm(url) {
+function populateReplyForm(url,options) {
+
     //
     //  Once the comments are loaded we can populate the reply-area.
     //
-    $("#comments").append("<div id=\"comments-reply\"></div>");
+    if ( options && options["reply-placement"] )
+    {
+        if ( options["reply-placement"] == "above" )
+        {
+            $("#comments").prepend("<div id=\"comments-reply\"></div>");
+        }
+        else if ( options["reply-placement"] == "below" )
+        {
+            $("#comments").append("<div id=\"comments-reply\"></div>");
+        }
+        else {
+            alert("Illegal 'reply-placement' value.   You may only use 'above' or 'below'" );
+        }
+    }
+    else
+    {
+        $("#comments").append("<div id=\"comments-reply\"></div>");
+    }
 
     //
-    //  This is unpleasant.
+    //  If we got options we might have a DIV to use for Reply-purposes.
     //
-    $("#comments-reply").html(" \
-  <h2>Add Comment</h2> \
-  <blockquote> \
-<form method=\"POST\" id=\"myform\" action=\"\"> \
+    //  If so use it.
+    //
+    if ( options && options["reply-div"] )
+    {
+        $("#comments-reply").html( $(options["reply-div"]).html() );
+    }
+    else
+    {
+        //
+        //  This is unpleasant.
+        //
+        $("#comments-reply").html(" \
+<h2>Add Comment</h2> \
+<blockquote> \
+<form method=\"POST\" id=\"ecommentsreply\" action=\"\"> \
       <table> \
         <tr> \
           <td>Your Name</td> \
@@ -122,16 +151,17 @@ function populateReplyForm(url) {
     </form> \
   </blockquote> \
 ");
+    }
 
     //
     // Capture form-submissions.
     //
-    $("#myform").bind("submit", (function() {
+    $("#ecommentsreply").bind("submit", (function() {
 
         //
         // Hide the form when submitting.
         //
-        $("#myform").hide();
+        $("#ecommentsreply").hide();
 
         //
         // Send the POST
@@ -139,7 +169,7 @@ function populateReplyForm(url) {
         $.ajax({
             type: "POST",
             url: url,
-            data: $("#myform").serialize(),
+            data: $("#ecommentsreply").serialize(),
             error: function(r, e) {
                 loadComments(url);
             },
@@ -162,10 +192,10 @@ function populateReplyForm(url) {
 //  e.g. http://comments.example.com/comments/apache
 //
 //
-function discussion(url) {
+function discussion(url, options) {
     //
     //  Load the comments, and populate the <div id="comments"> area with them
     //
-    loadComments(url)
+    loadComments(url, options)
 
 }
