@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+require 'redis'
+require 'json'
+
+#
+# Convert the comments against the given ID
+#
+def convert(r, id )
+
+  tmp = Array.new
+
+  #
+  #  For each existing member.
+  #
+  r.smembers( id ).each do |str|
+
+    #
+    # Parse
+    #
+    if ( str =~ /^([^|]+)\|([^|]+)\|([^|]+)\|(.*)/m )
+      ip     = $1.dup
+      time   = $2.dup
+      author = $3.dup
+      body   = $4.dup
+
+      a = Hash.new
+      a["author"] = author
+      a["body" ] = body
+      a["ip"] = ip
+      a["time"] = time
+
+      tmp.push( a.to_json )
+    end
+  end
+
+  #
+  #  Delete old comments
+  #
+  puts "Deleting: #{id}"
+  r.del( id )
+
+  #
+  # Add new ones.
+  #
+  tmp.each do |str|
+    puts "Adding: #{str}"
+    r.sadd( id, str )
+  end
+
+end
+
+
+r = Redis.new( :server => "127.0.0.1" )
+
+r.keys( "comments-*").each do |id|
+  puts "Handling ID: #{id}"
+  convert( r, "#{id}" )
+end

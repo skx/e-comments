@@ -47,11 +47,13 @@
 # --
 
 
+require 'digest/md5'
 require 'getoptlong'
 require 'json'
 require 'redcarpet'
 require 'sinatra/base'
 require 'time'
+
 
 #
 # Our backends
@@ -162,17 +164,17 @@ class CommentStore < Sinatra::Base
       halt 500, "Missing 'ID'"
     end
 
-    ip = request.ip
-
-    #
-    #  Avoid injection of "|" in author-name
-    #
-    author.gsub!( /\|/, " " )
-
     #
     #  Test for spam, via our plugins
     #
-    obj = { :author => author, :body => body, :ip => ip, :site => request.host }
+    obj = { :author => author, :body => body,
+      :ip => request.ip, :site => request.host,
+      :time => Time.now }
+
+    #
+    #  TODO: params.each ...
+    #
+    obj[:email] = params[:email] if ( params[:email] )
 
     #
     # Look for spam.
@@ -184,16 +186,10 @@ class CommentStore < Sinatra::Base
       end
     end
 
-
-    #
-    #  Trivial stringification.
-    #
-    content = "#{ip}|#{Time.now}|#{author}|#{body}"
-
     #
     #  Add to the set.
     #
-    @storage.add( id, content )
+    @storage.add( id, obj.to_json )
 
     #
     #  All done
@@ -244,42 +240,59 @@ class CommentStore < Sinatra::Base
     #
     values.each do |str|
 
-      # tokenize.
-      if ( str =~ /^([^|]+)\|([^|]+)\|([^|]+)\|(.*)/m )
-        ip     = $1.dup
-        time   = $2.dup
-        author = $3.dup
-        body   = $4.dup
+      #
+      # Convert the stored JSON comment to an object, a hash.
+      #
+      obj = JSON.parse str
 
-        author = CGI.escapeHTML(author || "")
+      #
+      # Note the options to the Markdown constructor
+      # protect us against XSS.
+      #
+      obj[:body] = markdown.render( obj['body'] )
 
-        #
-        # Note the options to the Markdown constructor
-        # protect us against XSS.
-        #
-        body = markdown.render( body )
+      #
+      # Add 'rel="nofollow"' to all links.  The markdown arguments
+      # should do that, but they do not.
+      #
+      obj['body'].gsub!( /href=/, "rel=\"nofollow\" href=" )
 
-        #
-        # Add 'rel="nofollow"' to all links.  The markdown arguments
-        # should do that, but they do not.
-        #
-        body.gsub!( /href=/, "rel=\"nofollow\" href=" )
+      #
+      # CGI-escape author
+      #
+      obj['author'] = CGI.escapeHTML( obj['author'] || "")
 
+      #
+      # If we have a stored email address then create a gravitar
+      #
+      if ( obj['email'] )
+        email  = obj['email'].downcase
 
+        # create the md5 hash
+        hash = Digest::MD5.hexdigest(email)
 
+        # set the gravitar URL
+        obj['gravitar'] = "http://www.gravatar.com/avatar/#{hash}"
 
-        # Add the values to our array of hashes
-        result << { :time => time,
-          :ago => time_ago(time),
-          :ip => ip,
-          :author => author,
-          :body => body }
-        i += 1
+        # delete the email for privacy reasons
+        obj.delete( "email" )
       end
+
+
+      #
+      #  Add in missing fields.
+      #
+      obj['ago'] = time_ago(obj['time'] )
+      obj['id' ] = i
+
+      # Add the values to our array of hashes
+      result << obj
+
+      i += 1
     end
 
     # sort to show most recent last.
-    json = result.sort_by {|vn| vn[:time]}.to_json()
+    json = result.sort_by {|vn| vn['time']}.to_json()
 
     # now return a JSONP-friendly result.
     "comments(#{json})";
