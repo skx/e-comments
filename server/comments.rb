@@ -98,7 +98,7 @@ class CommentStore < Sinatra::Base
   # Posting a hash of author + body, with a given ID will
   # append a simplified version of the comment to the storage-backend.
   #
-  post '/comments/:id' do
+  post '/comments/:id/?:sort?' do
 
     author = params[:author]
     body   = params[:body]
@@ -154,7 +154,7 @@ class CommentStore < Sinatra::Base
   #  Get the comments associated with a given ID, sorted by the date
   # (oldest first).
   #
-  get '/comments/:id' do
+  get '/comments/:id/?:sort?' do
     id = params[:id]
 
     result = Array.new()
@@ -244,10 +244,13 @@ class CommentStore < Sinatra::Base
     end
 
     # sort to show most recent last.
-    json = result.sort_by {|vn| vn['time']}.to_json()
+    json = result.sort_by {|vn| vn['time']}
+
+    # Unless the user wants the reverse.
+    json = json.reverse if ( params[:sort] && params[:sort] == "reverse" )
 
     # now return a JSONP-friendly result.
-    "comments(#{json})";
+    "comments(#{json.to_json()})";
   end
 
 
