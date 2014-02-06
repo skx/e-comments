@@ -5,23 +5,29 @@ This is an open source commenting system, allowing you to include
 comments on your static website(s) without the privacy concerns of
 using an external system such as disqus.
 
-Embedding comments is as simple as including a 4k Javascript file,
-(1k when minified) and a CSS file for styling.
+Embedding comments is as simple as including a 5k Javascript file,
+(2k when minified) and a CSS file for styling.
 
 Features:
 
-* Markdown formatting for your visitors.
-* Support for anti-spam plugins.
-   * Three simple plugins included as a demonstration.
-   * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
 * Multiple backends for storage:
    * Redis
    * SQlite
    * Adding new backends is simple.
+* Markdown formatting of comments.
+* Anti-spam plugins:
+   * Three simple plugins included as a demonstration.
+   * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
 * Simplicity
    * The code is small enough to easily understand and extend for your custom needs, but functional as-is.
 * Degrades gracefully when Javascript is disabled
    * No white boxes, empty spaces, or error-messages.
+
+Anti-features:
+
+* Comments are flat, not threaded.
+* There is no administrative panel to edit/delete comments.
+   * This requires manual intervention in the back-end.
 
 
 Comment Server
