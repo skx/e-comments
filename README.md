@@ -169,6 +169,16 @@ supported:
 > **NOTE**: If you wish to use a custom reply form you **must** give the FORM the ID `ecommentsreply`.  (i.e. `<form id="ecommentsreply" ..>`)
 
 
+Alternative Systems
+-------------------
+
+* [talkatv](https://github.com/talkatv/talkatv)
+    * Python-based.
+* [isso](https://github.com/posativ/isso/)
+    * Python-based.
+* [Juvia](https://github.com/phusion/juvia)
+    * Ruby-on-rails-based.
+
 
 Online Demo
 -----------
