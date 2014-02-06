@@ -136,10 +136,11 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 #### Customization
 
-There are two different ways that you can customize the client-side comments:
+There are three different ways that you can customize the client-side comments:
 
 * Via CSS.
 * Via options passed to the `discussion` function.
+* By appending `/reverse` to the URL, to show comments most-recent first.
 
 The comments which are retrieved from the comment-server are retrieved as
 a JSON-encoded array of hashes.  From there the client-side code will wrap
