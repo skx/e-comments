@@ -5,7 +5,7 @@
     <script src="js/e-comments.js" type="text/javascript"></script>
     <script type="text/javascript">
       $( document ).ready(function() {
-      discussion( "http://localhost:9393/comments/id", {"reply-placement":"below", "reply-div": "#foo" } );
+      discussion( "http://localhost:9393/comments/id/reverse", {"reply-placement":"above", "reply-div": "#foo" } );
       });
     </script>
     <title>Customized Demo</title>
@@ -15,6 +15,13 @@
     <p>This is a demo of the <a href="https://github.com/skx/e-comments/">e-comments</a> self-hosted comment server.</p>
     <p>The code was initially developed to provide comments for a 100% static site  (<a href="http://tweaked.io/">http://tweaked.io : server optimization</a>.)</p>
     <p>Comments will appear below this area, once loaded via a cross-domain JSONP request.   A <a href="demo.html">simple demo</a> shows the default look/feel.</p>
+    <h2>This Demo</h2>
+    <p>This demo is customized in three ways:</p>
+    <ul>
+      <li>The URL we request from the comment-server has "<tt>/reverse</tt>" appended to it - so that the comments come in most-recent-first order.</li>
+      <li>The reply-form is above the comments.</li>
+      <li>The reply-form comes from <i>this</i> page, rather than from the included Javascript.</li>
+    </ul>
     <div id="comments"></div>
 
     <div id="foo" style="display:none;">
