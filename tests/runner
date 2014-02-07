@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+
+
+require 'test/unit'
+require 'fileutils'
+
+
+#
+# Find where this file is located.
+#
+dir = File.dirname(__FILE__)
+
+#
+# Load each file in the same directory.
+#
+Dir.glob(File.join(dir,"t*.rb")).each do |test|
+  require test
+end
+

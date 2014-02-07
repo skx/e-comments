@@ -43,3 +43,9 @@ format:
 minify:
 	@if ( test -x ./utils/minify ) ; then ./utils/minify ; fi
 
+
+#
+# Run the minimal test-cases.
+#
+test:
+	./tests/runner
