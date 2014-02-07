@@ -1,0 +1,65 @@
+require "net/http"
+require "uri"
+require 'json'
+
+
+#
+# This is a simple plugin that will inspect the submitted comment
+# and reject those that have hyperlinks in their names.
+#
+class BlogSpamPlugin < SpamPlugin
+
+  #
+  # Test remotely
+  #
+  def is_spam?( obj )
+
+    return false if ( ! obj )
+    return false if ( ! obj[:author] )
+    return false if ( ! obj[:body] )
+    return false if ( ! obj[:email] )
+    return false if ( ! obj[:ip] )
+    return false if ( obj[:ip]  == "127.0.0.1" )
+
+    #
+    # The comment we're testing
+    #
+    message = {
+      "ip"      => obj[:ip],
+      "site"    => obj[:site],
+      "name"    => obj[:author],
+      "comment" => obj[:body]
+    }
+
+    #
+    #  Build up the request.
+    #
+    uri = URI("http://test.blogspam.net:9999/")
+    req = Net::HTTP::Post.new(uri.path)
+
+    #
+    # Set the body
+    #
+    req.body = message.to_json
+    puts "Sending: #{req.body}"
+    #
+    # Make the request.
+    #
+    res = Net::HTTP.start(uri.host, uri.port) do |http|
+      http.request req
+    end
+
+    #
+    #  If it succeeded print the response.
+    #
+    if ( res.code.to_i == 200 )
+      obj = JSON.parse res.body
+      if ( obj["result"] =~ /spam/i )
+        puts "Rejecting spam Comment: #{obj["reason"]}"
+        return true
+      end
+    end
+
+    return false
+  end
+end
