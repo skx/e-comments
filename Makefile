@@ -13,17 +13,23 @@ nop:
 	@echo " "
 	@echo "Valid targets:"
 	@echo " "
-	@echo "make serve  - Start the server running, using redis for storage"
-	@echo "make format - Pretty-print the client-side javascript"
-	@echo "make minify - Build the minified version of the client-side javascript"
-	@echo " "
+	@echo "make serve  - Start the server running, using redis for storage."
+	@echo "make format - Pretty-print the client-side javascript."
+	@echo "make minify - Build the minified version of the client-side javascript."
+	@echo "make test   - Run the test-cases. "
 	@true
 
 #
 # Start the server
 #
+# If `bundle` is detected then launch via that - on the assumption the
+# user has run `bundle install --path=./vendor/gems/
+#
+# Otherwise launche natively.
+#
 serve:
-	STORAGE=redis ./server/comments.rb
+	if ( which bundle >/dev/null 2>/dev/null ) ; then bundle exec ./server/comments.rb --redis ; else   ./server/comments.rb --redis  ; fi
+
 
 #
 # Pretty-Print the code.  Install js_beautify via:
