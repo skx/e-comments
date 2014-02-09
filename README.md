@@ -107,7 +107,7 @@ the outside world if client-browsers are going to connect to add/view comments.
 Client-Side Inclusion
 ---------------------
 
-Including comments to the static-pages on your site is a simple as including the
+Permitting comments on your sites static-pages is a simple as including the
 following in your HTML HEAD section:
 
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -125,8 +125,8 @@ Then inside your body somewhere place the following:
 
 The `discussion()` method accepts two arguments:
 
-* The URL of the comment-server you've got running, including the ID of the discussion to include.
-* An optional hash of options, which is used for customization.
+* The URL of the comment-server you've got running, including a discussion ID.
+* An optional hash of parameters, to customize the comments.
 
 For example one page might include comments like so:
 
@@ -147,14 +147,16 @@ There are three different ways that you can customize the client-side comments:
 * Via CSS.
 * Via options passed to the `discussion` function.
 * By appending `/reverse` to the URL, to show comments most-recent first.
+   * For example `discussion( "http://server.name/comments/about/reverse" );`
 
-The comments which are retrieved from the comment-server are retrieved as
-a JSON-encoded array of hashes.  From there the client-side code will wrap
-the comments in some `<div class="xx"..>` wrappers, with the expectation
-that this will allow them to be styled differently.
+The comments are retrieved from the comment-server as a JSON-encoded array
+of hashes.  These comments are then wrapped inside some `<div class="xx"..>`,
+such that they can be styled for display.
 
-The basic formatting that exists by default is contained in
+The basic formatting that exists by default is contained within
 the `/css/e-comments.css` file, and you can update that freely.
+
+>> **NOTE**: I welcome the contribution of different styling examples.
 
 The second means of customization is by passing a hash of options
 to the `discussions()` method.  Currently the following options are
