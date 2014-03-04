@@ -99,6 +99,7 @@ class CommentStore < Sinatra::Base
   # append a simplified version of the comment to the storage-backend.
   #
   post '/comments/:id/?:sort?' do
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
     author = params[:author]
     body   = params[:body]
@@ -155,6 +156,8 @@ class CommentStore < Sinatra::Base
   # (oldest first).
   #
   get '/comments/:id/?:sort?' do
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
     id = params[:id]
 
     result = Array.new()

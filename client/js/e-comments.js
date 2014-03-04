@@ -37,13 +37,13 @@
 //
 // The comments will invoke the `comments(data)` function, when loaded.
 //
-function loadComments(url, options) {
+function loadComments(url, options, err) {
     $.ajax({
         url: url + "?callback=?",
         dataType: 'jsonp',
         crossDomain: true,
         complete: (function() {
-            populateReplyForm(url, options);
+            populateReplyForm(url, options, err);
         })
     });
 }
@@ -89,7 +89,8 @@ function comments(data) {
 //
 // Generate the reply-form for users to add comments.
 //
-function populateReplyForm(url, options) {
+function populateReplyForm(url, options, err) {
+
 
     //
     //  Once the comments are loaded we can populate the reply-area.
@@ -147,6 +148,10 @@ function populateReplyForm(url, options) {
 ");
     }
 
+    if (err) {
+        $("#comments-reply").prepend("<p><b>Your comment was not submitted</b></p>");
+    }
+
     //
     // Capture form-submissions.
     //
@@ -165,13 +170,13 @@ function populateReplyForm(url, options) {
             url: url,
             data: $("#ecommentsreply").serialize(),
             error: function(r, e) {
-                loadComments(url, options);
+                loadComments(url, options, ( r.status == 500 ) );
             },
             complete: function(r, e) {
-                loadComments(url, options);
+                loadComments(url, options, ( r.status == 500 ) );
             },
             datatype: 'jsonp',
-        })
+        });
         return false;
     }));
 
