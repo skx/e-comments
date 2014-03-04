@@ -30,6 +30,9 @@ Anti-features:
    * This requires manual intervention in the back-end.
 
 
+This server was originally written for my [server optimization guide](http://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
+
+
 Comment Server
 --------------
 
@@ -79,20 +82,8 @@ Or
 #### Comment Server Deployment
 
 Assuming you have the appropriate library available you should specify
-your preferred storage mechanism like so:
-
-     $ STORAGE=redis ./server/comments.rb
-
-Or:
-
-     $ STORAGE=sqlite ./server/comments.rb
-
-When SQLite is chosen the database can be set to an explicit path via the
-DB variable:
-
-     $ DB=/tmp/comments.db STORAGE=sqlite ./server/comments.rb
-
-As a shortcut you may prefer:
+your preferred storage mechanism via the command line options
+`--redis` or `--sqlite`:
 
      $ ./server/comments.rb --redis | --sqlite=/tmp/foo.db
 
@@ -156,7 +147,7 @@ such that they can be styled for display.
 The basic formatting that exists by default is contained within
 the `/css/e-comments.css` file, and you can update that freely.
 
->> **NOTE**: I welcome the contribution of different styling examples.
+> **NOTE**: I welcome the contribution of different styling examples.
 
 The second means of customization is by passing a hash of options
 to the `discussions()` method.  Currently the following options are
