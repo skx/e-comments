@@ -149,7 +149,7 @@ function populateReplyForm(url, options, err) {
     }
 
     if (err) {
-        $("#comments-reply").prepend("<p><b>Your comment was not submitted</b></p>");
+        $("#comments-reply").prepend("<h2>Comment Rejected</h2><blockquote><p>Your comment was not submitted: " + err + "</p></blockquote>");
     }
 
     //
@@ -170,10 +170,20 @@ function populateReplyForm(url, options, err) {
             url: url,
             data: $("#ecommentsreply").serialize(),
             error: function(r, e) {
-                loadComments(url, options, ( r.status == 500 ) );
+                var err = false;
+                if (r.status == 500 )
+                {
+                    err = r.responseText;
+                }
+                loadComments(url, options, err );
             },
             complete: function(r, e) {
-                loadComments(url, options, ( r.status == 500 ) );
+                var err = false;
+                if (r.status == 500 )
+                {
+                    err = r.responseText;
+                }
+                loadComments(url, options, err );
             },
             datatype: 'jsonp',
         });
