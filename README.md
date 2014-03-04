@@ -91,7 +91,7 @@ your preferred storage mechanism via the command line options
 will need to place a suitable proxy in front of it if you wish it to
 be available.
 
-**NOTE** You need to expose http://comments.exaimple.com/comments/ to
+**NOTE** You need to expose http://comments.example.com/comments/ to
 the outside world if client-browsers are going to connect to add/view comments.
 
 
