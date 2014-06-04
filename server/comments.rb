@@ -135,7 +135,15 @@ class CommentStore < Sinatra::Base
     #
     SpamPlugin.repository.each do |plugin|
       if plugin.is_spam? obj
-        puts "comment marked as spam by the plugin #{plugin.class} - #{obj.to_json}"
+
+        #
+        # Show this rejection to the console, unless running
+        # under the test-suite.
+        #
+        if ( ENV["TESTSUITE"] != "true" )
+          puts "comment marked as spam by the plugin #{plugin.class} - #{obj.to_json}"
+        end
+
         halt 500, "The server marked this comment as likely to be SPAM."
       end
     end

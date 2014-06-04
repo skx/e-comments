@@ -12,6 +12,11 @@ require 'fileutils'
 dir = File.dirname(__FILE__)
 
 #
+# We're running under the test-suite
+#
+ENV["TESTSUITE"]="true"
+
+#
 # Load each file in the same directory.
 #
 Dir.glob(File.join(dir,"t*.rb")).each do |test|
