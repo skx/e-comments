@@ -98,7 +98,7 @@ class CommentStore < Sinatra::Base
   # Posting a hash of author + body, with a given ID will
   # append a simplified version of the comment to the storage-backend.
   #
-  post '/comments/:id/?:sort?' do
+  post '/comments/:id/?' do
     response.headers['Access-Control-Allow-Origin'] = '*'
 
     author = params[:author]
