@@ -207,7 +207,16 @@ class CommentStore < Sinatra::Base
       #
       # Convert the stored JSON comment to an object, a hash.
       #
-      obj = JSON.parse str
+      # If there are errors skip that entry.
+      #
+      # Even though our own script serialized the comment-data
+      # I've rarely seen a couple of errors.
+      #
+      begin
+        obj = JSON.parse str
+      rescue => ex
+        next
+      end
 
       #
       # Note the options to the Markdown constructor
