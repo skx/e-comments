@@ -271,6 +271,7 @@ class CommentStore < Sinatra::Base
     json = json.reverse if ( params[:sort] && params[:sort] == "reverse" )
 
     # now return a JSONP-friendly result.
+    content_type 'application/json'
     "comments(#{json.to_json()})";
   end
 
