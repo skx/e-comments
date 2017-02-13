@@ -178,7 +178,7 @@ Online Demo
 
 There is a live online demo you can view here:
 
-* http://www.steve.org.uk/Software/e-comments/demo.html
+* https://tweaked.io/guide/demo/
 
 Steve
 --
