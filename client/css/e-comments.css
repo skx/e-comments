@@ -5,7 +5,6 @@ div.comment {
         margin: 10px 0px;
 
 }
-
 .comment-spacing {
         margin: 15px;
 }
@@ -14,6 +13,14 @@ div.comment div.body {
 	padding: 10px 10px;
 }
 
+div.comment div.replyto {
+    text-align:right;
+    margin:2px;
+    padding:2px;
+}
+div.comment div.replyto div {
+    text-align: left;
+}
 div.comment .title {
         background-color: #ddd;
 	font-weight: bold;
