@@ -245,7 +245,7 @@ class CommentStore < Sinatra::Base
         hash = Digest::MD5.hexdigest(email)
 
         # set the gravitar URL
-        obj['gravitar'] = "http://www.gravatar.com/avatar/#{hash}"
+        obj['gravitar'] = "//www.gravatar.com/avatar/#{hash}"
 
         # delete the email for privacy reasons
         obj.delete( "email" )
