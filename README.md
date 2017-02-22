@@ -15,7 +15,7 @@ Features:
    * SQlite
    * Adding new backends is simple.
 * Markdown formatting of comments.
-* Support for threaded discussion.
+* Support for __threaded discussion__.
 * Anti-spam plugins:
    * Three simple plugins included as a demonstration.
    * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
