@@ -110,7 +110,7 @@ function replyForm(parent) {
     //
     // If we were given a template, then use that.
     //
-    if ( GLOBAL['reply_template'] ) {
+    if ( GLOBAL && GLOBAL['reply_template'] ) {
         form_template = $(GLOBAL['reply_template']).html();
     }
 
@@ -191,7 +191,7 @@ function comments(data) {
         //
         // If we were given a display-template, then use that.
         //
-        if ( GLOBAL['comment_template'] ) {
+        if ( GLOBAL && GLOBAL['comment_template'] ) {
             comment_template = $(GLOBAL['comment_template']).html();
         }
 
