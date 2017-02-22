@@ -135,33 +135,12 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 #### Customization
 
-There are three different ways that you can customize the client-side comments:
+In the past it used to be possible to (easily) customize the display
+of the comments.  Currently the display _is_ templated, but that is
+handled via an included pair of [mustache.js](https://github.com/janl/mustache.js) templates, and requires tweaking the javascript.
 
-* Via CSS.
-* Via options passed to the `discussion` function.
-* By appending `/reverse` to the URL, to show comments most-recent first.
-   * For example `discussion( "http://server.name/comments/about/reverse" );`
-
-The comments are retrieved from the comment-server as a JSON-encoded array
-of hashes.  These comments are then wrapped inside some `<div class="xx"..>`,
-such that they can be styled for display.
-
-The basic formatting that exists by default is contained within
-the `/css/e-comments.css` file, and you can update that freely.
-
-> **NOTE**: I welcome the contribution of different styling examples.
-
-The second means of customization is by passing a hash of options
-to the `discussions()` method.  Currently the following options are
-supported:
-
-|Parameter|Meaning|
-|---------|-------|
-|`reply-div`|If this value is present then the hardcoded "Add your comment" form is not used.  Instead the content of the specified DIV is displayed instead.|
-|`reply-placement`|This should be set to `before` or `after`, and will specify whether the reply-form will be displayed above or below the list of existing comments.|
-
-
-> **NOTE**: If you wish to use a custom reply form you **must** give the FORM the ID `ecommentsreply`.  (i.e. `<form id="ecommentsreply" ..>`)
+It is hoped in the future this will not be required, although you
+should be safe to fork and modify the CSS file at least.
 
 
 Alternative Systems
