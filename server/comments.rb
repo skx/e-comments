@@ -2,7 +2,7 @@
 #
 # This is a Sinatra application for storing/retrieving comments.
 #
-# It was originally designed to work on the http://tweaked.io/ site
+# It was originally designed to work on the https://tweaked.io/ site
 # but there is nothing specific to that site here.
 #
 # The only dependencies are either the Redis client libraries, and a
@@ -53,6 +53,7 @@ require 'json'
 require 'redcarpet'
 require 'sinatra/base'
 require 'time'
+require 'uuidtools'
 
 
 #
@@ -128,7 +129,10 @@ class CommentStore < Sinatra::Base
     #
     #  TODO: params.each ...
     #
-    obj[:email] = params[:email] if ( params[:email] )
+    #  Add the email and parent, if they were supplied.
+    #
+    obj[:email]  = params[:email] if ( params[:email] )
+    obj[:parent] = params[:parent] if ( params[:parent] )
 
     #
     # Look for spam.
@@ -147,6 +151,11 @@ class CommentStore < Sinatra::Base
         halt 500, "The server marked this comment as likely to be SPAM."
       end
     end
+
+    #
+    #  Ensure that each submission has a UUID
+    #
+    obj[:uuid] = UUIDTools::UUID.random_create
 
     #
     #  Add to the set.

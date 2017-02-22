@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+
+require 'uuidtools'
+require 'json'
+require 'sqlite3'
+
+
+class AddUUID
+  #
+  # Constructor.
+  #
+  def initialize( db )
+    @sqlite = SQLite3::Database.open db
+  end
+
+  #
+  # Read each JSON object.
+  #
+  # Add an UUID field if not present.
+  #
+  def upgrade
+    stm = @sqlite.prepare( 'SELECT idx,content FROM store' )
+
+    stm.execute.each do |item|
+      # Get the data.
+      id  = item[0]
+      txt = item[1]
+
+      # Parse the text to JSON
+      obj = JSON.parse(txt)
+
+      # If there is no UUID then upgrade this entry.
+      add_uuid( id, obj ) unless ( obj['uuid'] )
+    end
+  end
+
+  #
+  # Given an ID + Hash populate the UUID field of that hash
+  # and update the database with the result.
+  #
+  def add_uuid( id, obj )
+    # Add the UUID
+    obj['uuid'] = UUIDTools::UUID.random_create
+
+    # Turn the hash back to JSON
+    txt = JSON.generate( obj )
+
+    puts( "Updating #{id}")
+    # Update the DB.
+    @sqlite.execute( 'UPDATE store SET content=? WHERE idx=?', txt, id )
+  end
+end
+
+
+#
+# Upgrade the named database.
+#
+helper = AddUUID.new( "/tmp/db.db" )
+helper.upgrade

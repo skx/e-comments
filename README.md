@@ -5,8 +5,8 @@ This is an open source commenting system, allowing you to include
 comments on your static website(s) without the privacy concerns of
 using an external system such as disqus.
 
-Embedding comments is as simple as including a 5k Javascript file,
-(2k when minified) and a CSS file for styling.
+Embedding comments is as simple as including a couple of small javascript
+files, along with a CSS file for styling.
 
 Features:
 
@@ -15,6 +15,7 @@ Features:
    * SQlite
    * Adding new backends is simple.
 * Markdown formatting of comments.
+* Support for threaded discussion.
 * Anti-spam plugins:
    * Three simple plugins included as a demonstration.
    * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
@@ -25,10 +26,10 @@ Features:
 
 Anti-features:
 
-* Comments are flat, not threaded.
 * There is no administrative panel to edit/delete comments.
    * This requires manual intervention in the back-end.
-
+* Commenters do not get their details remembered.
+   * Nor can they receive emails on replies to their comments.
 
 This server was originally written for my [server optimization guide](http://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
 
@@ -101,11 +102,12 @@ Client-Side Inclusion
 Permitting comments on your sites static-pages is a simple as including the
 following in your HTML HEAD section:
 
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="/js/mustache.js" type="text/javascript"></script>
     <script src="/js/e-comments.js" type="text/javascript"></script>
-    <link rel="stylesheet" type="text/css" href="/css/e-comments.css" media="screen" />
+
     <script type="text/javascript">
-       $( document ).ready(function() {
+      $( document ).ready(function() {
         discussion( "http://server.name/comments/id" );
     });
     </script>
@@ -133,33 +135,12 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 #### Customization
 
-There are three different ways that you can customize the client-side comments:
+In the past it used to be possible to (easily) customize the display
+of the comments.  Currently the display _is_ templated, but that is
+handled via an included pair of [mustache.js](https://github.com/janl/mustache.js) templates, and requires tweaking the javascript.
 
-* Via CSS.
-* Via options passed to the `discussion` function.
-* By appending `/reverse` to the URL, to show comments most-recent first.
-   * For example `discussion( "http://server.name/comments/about/reverse" );`
-
-The comments are retrieved from the comment-server as a JSON-encoded array
-of hashes.  These comments are then wrapped inside some `<div class="xx"..>`,
-such that they can be styled for display.
-
-The basic formatting that exists by default is contained within
-the `/css/e-comments.css` file, and you can update that freely.
-
-> **NOTE**: I welcome the contribution of different styling examples.
-
-The second means of customization is by passing a hash of options
-to the `discussions()` method.  Currently the following options are
-supported:
-
-|Parameter|Meaning|
-|---------|-------|
-|`reply-div`|If this value is present then the hardcoded "Add your comment" form is not used.  Instead the content of the specified DIV is displayed instead.|
-|`reply-placement`|This should be set to `before` or `after`, and will specify whether the reply-form will be displayed above or below the list of existing comments.|
-
-
-> **NOTE**: If you wish to use a custom reply form you **must** give the FORM the ID `ecommentsreply`.  (i.e. `<form id="ecommentsreply" ..>`)
+It is hoped in the future this will not be required, although you
+should be safe to fork and modify the CSS file at least.
 
 
 Alternative Systems
