@@ -30,7 +30,7 @@ class AddUUID
       obj = JSON.parse(txt)
 
       # If there is no UUID then upgrade this entry.
-      add_uuid( id, obj ) if ( obj['uuid'].nil? )
+      add_uuid( id, obj ) unless ( obj['uuid'] )
     end
   end
 
@@ -45,8 +45,9 @@ class AddUUID
     # Turn the hash back to JSON
     txt = JSON.generate( obj )
 
+    puts( "Updating #{id}")
     # Update the DB.
-    @sqlite.execute( 'UPDATE store SET content=? WHERE id=?', txt, id )
+    @sqlite.execute( 'UPDATE store SET content=? WHERE idx=?', txt, id )
   end
 end
 
