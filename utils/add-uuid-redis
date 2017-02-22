@@ -1,0 +1,68 @@
+#!/usr/bin/ruby
+#
+#  TODO: Make this work.
+#
+
+require 'uuidtools'
+require 'redis'
+require 'json'
+
+
+class AddUUID
+
+  #
+  # Constructor.
+  #
+  def initialize( db )
+    rehost = ENV["REDIS"] || "127.0.0.1"
+    @redis = Redis.new( :host => rehost )
+  end
+
+  #
+  # Read each JSON object.
+  #
+  # Add an UUID field if not present.
+  #
+  def upgrade
+
+    #
+    #  Find each discussion key
+    #
+    @redis.keys( "comments-*" ).each do |key|
+      puts( "Handling discussion with ID #{key}" )
+      handle_key( key )
+    end
+  end
+
+
+  #
+  #  Upgrade the set members of the given key
+  #
+  def handle_key( key )
+
+    # For each member
+    @redis.smembers( key ).each do |json|
+
+      # Parse the text to JSON
+      obj = JSON.parse(txt)
+
+      # If there is no UUID then upgrade this entry.
+      if ( obj['uuid'].nil? )
+        obj['uuid'] = UUIDTools::UUID.random_create
+
+        # remove the old set-member
+        @redis.srem( key , txt )
+
+        # Add the new one
+        @redis.sadd( key, JSON.generate( obj ) )
+      end
+    end
+  end
+end
+
+
+#
+# Upgrade the local instance.
+#
+helper = AddUUID.new()
+helper.upgrade
