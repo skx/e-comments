@@ -146,12 +146,30 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 #### Customization
 
-In the past it used to be possible to (easily) customize the display
-of the comments.  Currently the display _is_ templated, but that is
-handled via an included pair of [mustache.js](https://github.com/janl/mustache.js) templates, and requires tweaking the javascript.
+There are two parts of the code which use markup, albeit with CSS
+too:
 
-It is hoped in the future this will not be required, although you
-should be safe to fork and modify the CSS file at least.
+* The display of the individual comments.
+* The display of the reply-form.
+
+Both of these HTML-snippets are stored as [mustache.js](https://github.com/janl/mustache.js) templates, and can be overridden by passing a suitable argument to the constructor.
+
+For example:
+
+        discussion( "http://localhost:9393/comments/id",
+                    { comment_template: '#comment_template',
+                      reply_template: '#reply_form'} );
+
+Once you do that you'll need to include the templates in your HTML
+page, for example the comment-template:
+
+    <script id="comment_template" type="x-tmpl-mustache">
+     <div class="comment">
+     <div class="link"><a href="#comment_{{ id }}">#{{ id }}</a></div>
+     ..
+     </script>
+
+You can copy the defaults from the `e-comments.js` file itself.
 
 
 Alternative Systems
@@ -171,6 +189,16 @@ Online Demo
 There is a live online demo you can view here:
 
 * https://tweaked.io/guide/demo/
+
+There is a demo included in this repository:
+
+* Launch the comment-server in one terminal.
+     * `./server/comments.rb --sqlite=/tmp/foo.db`
+* Start a local HTTP server in clients in another:
+     * `cd client ; python -m SimpleHTTPServer`
+* Open your browser:
+     * http://localhost:8000/demo.html
+     * Add some comments.
 
 Steve
 --

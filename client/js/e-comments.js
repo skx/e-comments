@@ -34,6 +34,7 @@
 // --
 
 
+var GLOBAL = {}
 
 //
 //
@@ -42,6 +43,12 @@
 // The comments will invoke the `comments(data)` function, when loaded.
 //
 function loadComments(url, options, err) {
+
+    //
+    // Save options away
+    //
+    GLOBAL = options;
+
     $.ajax({
         url: url + "?callback=?",
         dataType: 'jsonp',
@@ -58,7 +65,6 @@ function loadComments(url, options, err) {
 // This is used to create a dynamic reply-to form which can reply to
 // a specific parent-comment.kfor the given comment
 //
-//  TODO: Make this a mustache template too.
 //
 function replyForm(parent) {
     var form_template = '\
@@ -100,6 +106,13 @@ function replyForm(parent) {
     </form> \
   </blockquote> \
 ';
+
+    //
+    // If we were given a template, then use that.
+    //
+    if ( GLOBAL['reply_template'] ) {
+        form_template = $(GLOBAL['reply_template']).html();
+    }
 
     var html = Mustache.render( form_template, { parent: parent } );
     return( html );
@@ -174,6 +187,13 @@ function comments(data) {
 <div class="comment-spacing"></div> \
 <div style="margin: 50px;" id="replies-{{ uuid }}"></div> \
 ';
+
+        //
+        // If we were given a display-template, then use that.
+        //
+        if ( GLOBAL['comment_template'] ) {
+            comment_template = $(GLOBAL['comment_template']).html();
+        }
 
         //
         // Render the output.
