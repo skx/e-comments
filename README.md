@@ -31,7 +31,13 @@ Anti-features:
 * Commenters do not get their details remembered.
    * Nor can they receive emails on replies to their comments.
 
-This server was originally written for my [server optimization guide](http://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
+Run-time (client-side) dependencies:
+
+* jQuery
+* mustache.js
+    * Included in this repository.
+
+This server was originally written for my [server optimization guide](https://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
 
 
 Comment Server
@@ -45,6 +51,9 @@ and currently contains two diffent choices for storing the actual comment data:
 
 Adding new backends should be straight-forward, and pull-requests are
 welcome for MySQL, CouchDB, etc.
+
+SQLite is the preferred form for storage, but Redis is a reasonable
+choice too.
 
 
 
@@ -61,6 +70,9 @@ The server implements the following two API methods:
    * The submission should have the fields `author` and `body`.
    * Optionally the submission might contain the field `email`.
        * If an email is stored a Gravitar field will be present in the retrieval, but the actual email address will not be sent back to avoid a privacy leak.
+   * Optionally the submission might contain a `parent` field.
+       * This is used to support nested comments.
+       * There are no limits on the number of nested comments.
 
 
 #### Comment Server Dependencies
@@ -68,7 +80,7 @@ The server implements the following two API methods:
 These dependencies were tested on a Debian GNU/Linux stable machine,
 but are a good starting point for other distributions:
 
-    apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet
+    apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet ruby-uuidtools
 
 For storage you get to choose between on of these two alternatives:
 
@@ -76,8 +88,7 @@ For storage you get to choose between on of these two alternatives:
 
 Or
 
-    apt-get install rubygems
-    gem install sinatra
+    apt-get install ruby-redis
 
 
 #### Comment Server Deployment
