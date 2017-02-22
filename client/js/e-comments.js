@@ -74,10 +74,21 @@ function comments(data) {
         var author = val["author"];
         var body = val["body"];
         var ago = val["ago"];
+        var gravitar = val["gravitar"];
+
+        //
+        // We might not have a gravitar, so we'll only include
+        // it if it is set
+        //
+        if ( gravitar ) {
+            gravitar = "<img alt=\"[gravitar]\" src=\"" + gravitar + "\" class=\"avatar\" width=\"33\" height=\"32\">&nbsp;&nbsp;";
+        } else {
+            gravitar = "";
+        }
 
         $("#comments").append("<div class=\"comment\"> \
 <div class=\"link\"><a href=\"#comment_" + id + "\">#" + id + "</a></div> \
-<div class=\"title\"><a name=\"comment_" + id + "\">Author: " + author + "</a></div> \
+<div class=\"title\">" + gravitar + "<a name=\"comment_" + id + "\">Author: " + author + "</a></div> \
 <div class=\"tagline\">Posted " + ago + ".</div> \
 <div class=\"body\">" + body + "</div> \
 </div><div class=\"comment-spacing\"></div>");
