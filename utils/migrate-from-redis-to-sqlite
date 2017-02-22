@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+#
+# Migrate from Redis -> SQLite.
+#
+# Assumes redis is running on localhost, and the output will be sent
+# to "export.db" in the pwd.
+#
+#
+
+
+require 'redis'
+require 'sqlite3'
+
+@redis = Redis.new( :host => "127.0.0.1" )
+@sqlite = SQLite3::Database.open "export.db"
+
+begin
+      @sqlite.execute <<SQL
+  CREATE TABLE store (
+   idx INTEGER PRIMARY KEY,
+   id  VARCHAR(255),
+   content String
+  );
+SQL
+rescue => e
+  #
+  #  Error here is expected if the table exists.
+  #  Other errors are silently masked which is perhaps a mistake.
+  #
+end
+
+
+#
+#  Process each key
+#
+@redis.keys( "comments-*").each do |key|
+  puts( "Migrating key: #{key}" )
+
+  #
+  #  Remove the `comments-` prefix, as SQLIte doesn't need it.
+  #
+  name = key.gsub( /comments-/, '' )
+
+  # For each member.
+  @redis.smembers( key ).each do |ent|
+
+    # Add to SQLite.
+    @sqlite.execute( "INSERT INTO store (id,content) VALUES(?,?)", name, ent )
+  end
+end
+
+exit(0)
