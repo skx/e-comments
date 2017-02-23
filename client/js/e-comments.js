@@ -10,7 +10,7 @@
 //
 //  // begin
 //  <link rel="stylesheet" type="text/css" href="css/e-comments.css">
-//  <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+//  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 //  <script src="js/mustache.js" type="text/javascript"></script>
 //  <script src="js/e-comments.js" type="text/javascript"></script>
 //  <script type="text/javascript">
@@ -36,7 +36,6 @@
 
 var GLOBAL = {}
 
-//
 //
 // Load the comments by making a JSONP request to the given URL.
 //
@@ -268,7 +267,8 @@ function populateReplyForm(url, options, err) {
         //
         var data = $(this).serialize();
 
-        // Send the POST
+        //
+        // Send the POST-request
         //
         $.ajax({
             type: "POST",
@@ -303,8 +303,27 @@ function populateReplyForm(url, options, err) {
     }));
 
 
+    //
+    // If there was an error submitting the comment then handle it here.
+    //
+    // We do two things:
+    //
+    //  * Prepend the error-message to the comment-area.
+    //
+    //  * Scroll to make sure that is visible.
+    //
+    // Downside is we lose the comment/author/name, which is a shame.
+    //
+    // (The reason we lose this is that we nuke the existing contents
+    // of the comment-div, and then reinsert the existing values from
+    // scratch as a result of the AJAX POST request completing.)
+    //
     if (err) {
-        alert("<h2>Comment Rejected</h2><blockquote><p>Your comment was not submitted: " + err + "</p></blockquote>");
+        $("#comments").prepend("<h2>Comment Rejected</h2><blockquote><p>Your comment was not submitted.</p><p><b>" + err + "</b></p></blockquote>");
+
+        $('html, body').animate({
+            scrollTop: $("#comments").offset().top
+        }, 1000);
     }
 }
 
