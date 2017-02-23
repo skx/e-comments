@@ -31,8 +31,8 @@ comments, this is the default "no parent" setup.
 
 We need to add a link "Reply to _this_ comment" beneath every comment.
 
-All that will do is *clone* the comment-reply form, and populate the
-hidden parent field.
+I've gone the low-effort route and added a helper to add a (hidden)
+reply form beneath every comment.
 
 
 Upgrading
