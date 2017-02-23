@@ -49,6 +49,7 @@ This server was originally written for my [server optimization guide](https://tw
     * [Customizaton](#client-side-customization)
 * [Alternative Solutions](#alternative-systems)
 * [Online Demo](#online-demo)
+    * [Running Locally](#local-demo)
 
 
 ## The Comment Server
@@ -193,22 +194,31 @@ You can copy the defaults from the `e-comments.js` file itself.
     * Ruby-on-rails-based.
 
 
-Online Demo
------------
+## Online Demo
 
 There is a live online demo you can view here:
 
 * https://tweaked.io/guide/demo/
 
-There is a demo included in this repository:
+### Running Locally
+
+Providing you have the dependencies installed you can run the same
+demo locally:
 
 * Launch the comment-server in one terminal.
      * `./server/comments.rb --sqlite=/tmp/foo.db`
+     * The file `/tmp/foo.db` will be created, and used to store your comments.
 * Start a local HTTP server in clients in another:
      * `cd client ; python -m SimpleHTTPServer`
 * Open your browser:
      * http://localhost:8000/demo.html
      * Add some comments.
+
+This local demo works because the `demo.html` file is configured to access
+comments at `http://localhost:9393/`.  In a real deployment you'd hide
+the comment-server behind a reverse proxy and access it via a public
+name such as `comments.example.com`.
+
 
 Steve
 --
