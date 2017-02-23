@@ -110,12 +110,14 @@ function replyForm(parent) {
     //
     // If we were given a template, then use that.
     //
-    if ( GLOBAL && GLOBAL['reply_template'] ) {
+    if (GLOBAL && GLOBAL['reply_template']) {
         form_template = $(GLOBAL['reply_template']).html();
     }
 
-    var html = Mustache.render( form_template, { parent: parent } );
-    return( html );
+    var html = Mustache.render(form_template, {
+        parent: parent
+    });
+    return (html);
 }
 
 
@@ -152,8 +154,8 @@ function comments(data) {
         // This builds a (hidden) reply-to form for the given comment.
         //
         val.reply = function() {
-            return function(uuid){
-                return( replyForm( val.uuid) );
+            return function(uuid) {
+                return (replyForm(val.uuid));
             }
         };
 
@@ -165,7 +167,7 @@ function comments(data) {
         // gravitar value.  That will either contain a (protocol-agnostic)
         // URL, or be empty.
         //
-        if ( val['gravitar'] ) {
+        if (val['gravitar']) {
             val['gravitar'] = "<img alt=\"[gravitar]\" src=\"" + val['gravitar'] + "\" class=\"avatar\" width=\"33\" height=\"32\">&nbsp;&nbsp;";
         }
 
@@ -191,28 +193,25 @@ function comments(data) {
         //
         // If we were given a display-template, then use that.
         //
-        if ( GLOBAL && GLOBAL['comment_template'] ) {
+        if (GLOBAL && GLOBAL['comment_template']) {
             comment_template = $(GLOBAL['comment_template']).html();
         }
 
         //
         // Render the output.
         //
-        var html = Mustache.render( comment_template, val );
+        var html = Mustache.render(comment_template, val);
 
         //
         // If this particular comment is a nested one then we
         // need to insert it into the correct location.
         //
-        if ( val['parent'] )
-        {
+        if (val['parent']) {
             //
             // Append this comment beneath the named comment.
             //
             $("#replies-" + val['parent']).append(html);
-        }
-        else
-        {
+        } else {
             //
             // Otherwise just append to the bottom of our list
             // of comments.
@@ -277,19 +276,17 @@ function populateReplyForm(url, options, err) {
             data: data,
             error: function(r, e) {
                 var err = false;
-                if (r.status == 500 )
-                {
+                if (r.status == 500) {
                     err = r.responseText;
                 }
-                loadComments(url, options, err );
+                loadComments(url, options, err);
             },
             complete: function(r, e) {
                 var err = false;
-                if (r.status == 500 )
-                {
+                if (r.status == 500) {
                     err = r.responseText;
                 }
-                loadComments(url, options, err );
+                loadComments(url, options, err);
             },
             datatype: 'jsonp',
         });
@@ -300,7 +297,7 @@ function populateReplyForm(url, options, err) {
     //
     // Toggle reply-to comment div.
     //
-    $(".replyto a").on( 'click', (function () {
+    $(".replyto a").on('click', (function() {
         $(this).closest("div").children("div").toggle();
         return false;
     }));
