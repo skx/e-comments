@@ -13,41 +13,18 @@ nop:
 	@echo " "
 	@echo "Valid targets:"
 	@echo " "
-	@echo "make serve  - Start the server running, using redis for storage."
 	@echo "make format - Pretty-print the client-side javascript."
-	@echo "make minify - Build the minified version of the client-side javascript."
 	@echo "make test   - Run the test-cases. "
 	@true
 
-#
-# Start the server
-#
-# If `bundle` is detected then launch via that - on the assumption the
-# user has run `bundle install --path=./vendor/gems/
-#
-# Otherwise launche natively.
-#
-serve:
-	if ( which bundle >/dev/null 2>/dev/null ) ; then bundle exec ./server/comments.rb --redis ; else   ./server/comments.rb --redis  ; fi
-
 
 #
-# Pretty-Print the code.  Install js_beautify via:
+# Pretty-Print the code.  Install js-beautify via:
 #
-#    apt-get install libjavascript-beautifier-perl
+#    # apt-get install jsbeautifier
 #
 format:
-	@if ( test -x /usr/bin/js_beautify ) ; then /usr/bin/js_beautify -o client/js/e-comments.js ; fi
-
-#
-# Produce a minified version of the client-side code.
-#
-# To run this:
-#
-#    apt-get install libjavascript-minifier-perl
-#
-minify:
-	@if ( test -x ./utils/minify ) ; then ./utils/minify ; fi
+	@if ( test -x /usr/bin/js-beautify ) ; then /usr/bin/js-beautify -r client/js/e-comments.js ; fi
 
 
 #
