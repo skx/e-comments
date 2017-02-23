@@ -39,25 +39,35 @@ Run-time (client-side) dependencies:
 
 This server was originally written for my [server optimization guide](https://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
 
+* `Contents`
+    * [The comment server](#the-comment-server)
+        * [API](#comment-server-api)
+        * [Dependencies](#comment-server-dependencies)
+        * [Deployment](#comment-server-deployment)
+    * [Client-Side Setup](#client-side-setup)
+        * [Customizaton](#client-side-customization)
+    * [Alternative Solutions](#alternative-systems)
+    * [Online Demo](#online-demo)
 
-Comment Server
---------------
 
-The comment server is written using [sinatra](http://www.sinatrarb.com/),
-and currently contains two diffent choices for storing the actual comment data:
+## The Comment Server
+
+The comment server exports a public API allowing the javascript on your
+(static) pages to add comments, and retrieve those comments which already
+exist.  It is written in Ruby using the [sinatra](http://www.sinatrarb.com/),
+framework.
+
+There are two choices for storing the actual comment data:
 
 * A [Redis server](http://redis.io/).
 * An SQLite database.
+    * This is preferred.
 
 Adding new backends should be straight-forward, and pull-requests are
 welcome for MySQL, CouchDB, etc.
 
-SQLite is the preferred form for storage, but Redis is a reasonable
-choice too.
 
-
-
-#### Comment Server API
+### Comment Server API
 
 The server implements the following two API methods:
 
@@ -75,7 +85,7 @@ The server implements the following two API methods:
        * There are no limits on the number of nested comments.
 
 
-#### Comment Server Dependencies
+### Comment Server Dependencies
 
 These dependencies were tested on a Debian GNU/Linux stable machine,
 but are a good starting point for other distributions:
@@ -91,7 +101,7 @@ Or
     apt-get install ruby-redis
 
 
-#### Comment Server Deployment
+### Comment Server Deployment
 
 Assuming you have the appropriate library available you should specify
 your preferred storage mechanism via the command line options
@@ -107,8 +117,7 @@ be available.
 the outside world if client-browsers are going to connect to add/view comments.
 
 
-Client-Side Inclusion
----------------------
+## Client-Side Setup
 
 Permitting comments on your sites static-pages is a simple as including the
 following in your HTML HEAD section:
@@ -144,7 +153,7 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 
 
-#### Customization
+## Client-Side Customization
 
 There are two parts of the code which use markup, albeit with CSS
 too:
@@ -172,8 +181,8 @@ page, for example the comment-template:
 You can copy the defaults from the `e-comments.js` file itself.
 
 
-Alternative Systems
--------------------
+## Alternative Systems
+
 
 * [talkatv](https://github.com/talkatv/talkatv)
     * Python-based.
