@@ -49,7 +49,7 @@ This server was originally written for my [server optimization guide](https://tw
     * [Customizaton](#client-side-customization)
 * [Alternative Solutions](#alternative-systems)
 * [Online Demo](#online-demo)
-    * [Running Locally](#local-demo)
+    * [Running Locally](#running-locally)
 
 
 ## The Comment Server
