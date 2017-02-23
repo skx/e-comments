@@ -141,7 +141,7 @@ Then inside your body somewhere place the following:
 The `discussion()` method accepts two arguments:
 
 * The URL of the comment-server you've got running, including a discussion ID.
-* An optional hash of parameters, to customize the comments.
+* An optional hash of parameters, to customize behaviour.
 
 For example one page might include comments like so:
 
@@ -149,10 +149,20 @@ For example one page might include comments like so:
 
 And a different page might include:
 
-        discussion( "http://server.name/comments/about" );
+       discussion( "http://server.name/comments/about",
+                   { threading: false } );
+
 
 This ensures that both pages show distinct comments, and there is no confusion.
 
+Valid options include:
+
+* `threading`
+    * A boolean to control whether threading is enabled/disabled.
+* `comment_template`
+    * The ID of a script-div which contains a template for comment-formatting.
+* `reply_template`
+    * The ID of a script-div which contains a template for the "add comment" form.
 
 
 ## Client-Side Customization

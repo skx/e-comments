@@ -6,7 +6,8 @@
     <script src="js/e-comments.js" type="text/javascript"></script>
     <script type="text/javascript">
       $( document ).ready(function() {
-        discussion( "http://localhost:9393/comments/id" );
+        discussion( "http://localhost:9393/comments/id",
+                    { threading: true } );
       });
     </script>
     <title>Simple Demo</title>

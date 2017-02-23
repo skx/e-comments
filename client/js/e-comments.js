@@ -34,7 +34,7 @@
 // --
 
 
-var GLOBAL = {}
+var GLOBAL = { threading: true }
 
 //
 // Load the comments by making a JSONP request to the given URL.
@@ -46,7 +46,9 @@ function loadComments(url, options, err) {
     //
     // Save options away
     //
-    GLOBAL = options;
+    if ( options ) {
+        GLOBAL = options;
+    }
 
     $.ajax({
         url: url + "?callback=?",
@@ -159,6 +161,11 @@ function comments(data) {
         };
 
         //
+        // Is threading enabled?
+        //
+        val.threading = GLOBAL['threading'];
+
+        //
         // We have a hash of data in the val-argument,
         // which we're going to interpolate into our template.
         //
@@ -181,9 +188,7 @@ function comments(data) {
   <div class=\"title\">{{{ gravitar }}}<a name="comment_{{ id }}">Author: {{ author }}</a></div> \
   <div class="tagline">Posted {{ ago }}.</div> \
   <div class="body">{{{ body }}}</div> \
-  <div class="replyto"><a href="#">Reply to this comment</a>\
-    <div style="display:none; margin:50px; padding:50px; border:1px solid black;">{{#reply}}{{ uuid }}{{/reply}}</div> \
-  </div> \
+  {{#threading}}<div class="replyto"><a href="#">Reply to this comment</a><div style="display:none; margin:50px; padding:50px; border:1px solid black;">{{#reply}}{{ uuid }}{{/reply}}</div></div>{{/threading}} \
 </div> \
 <div class="comment-spacing"></div> \
 <div style="margin: 50px;" id="replies-{{ uuid }}"></div> \
