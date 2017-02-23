@@ -92,7 +92,7 @@ The server implements the following two API methods:
 These dependencies were tested on a Debian GNU/Linux stable machine,
 but are a good starting point for other distributions:
 
-    apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet ruby-uuidtools
+    apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet ruby-uuidtools ruby-rack-test
 
 For storage you get to choose between on of these two alternatives:
 
