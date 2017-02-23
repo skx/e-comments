@@ -39,15 +39,16 @@ Run-time (client-side) dependencies:
 
 This server was originally written for my [server optimization guide](https://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
 
-* `Contents`
-    * [The comment server](#the-comment-server)
-        * [API](#comment-server-api)
-        * [Dependencies](#comment-server-dependencies)
-        * [Deployment](#comment-server-deployment)
-    * [Client-Side Setup](#client-side-setup)
-        * [Customizaton](#client-side-customization)
-    * [Alternative Solutions](#alternative-systems)
-    * [Online Demo](#online-demo)
+### Contents
+
+* [The comment server](#the-comment-server)
+    * [API](#comment-server-api)
+    * [Dependencies](#comment-server-dependencies)
+    * [Deployment](#comment-server-deployment)
+* [Client-Side Setup](#client-side-setup)
+    * [Customizaton](#client-side-customization)
+* [Alternative Solutions](#alternative-systems)
+* [Online Demo](#online-demo)
 
 
 ## The Comment Server
