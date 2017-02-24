@@ -204,13 +204,15 @@ You can copy the defaults from the `e-comments.js` file itself.
 ## Alternative Systems
 
 
-* [talkatv](https://github.com/talkatv/talkatv)
-    * Python-based.
 * [isso](https://github.com/posativ/isso/)
     * Python-based.
+    * Seems active, and allows users to edit/delete their comments, which is nice.
+* [talkatv](https://github.com/talkatv/talkatv)
+    * Python-based.
+    * No screenshots, no online demo, seems to be a [defunct project](https://github.com/talkatv/talkatv/issues/45#issuecomment-78016274).
 * [Juvia](https://github.com/phusion/juvia)
     * Ruby-on-rails-based.
-
+    * [No longer maintained](https://github.com/phusion/juvia/issues/65).
 
 ## Online Demo
 
