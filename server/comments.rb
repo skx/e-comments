@@ -260,6 +260,10 @@ class CommentStore < Sinatra::Base
         obj.delete( "email" )
       end
 
+      #
+      # Don't leak the submitters IP address.
+      #
+      obj.delete( 'ip' ) if ( obj['ip'] )
 
       #
       #  Add in missing fields.
