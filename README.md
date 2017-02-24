@@ -48,7 +48,8 @@ This server was originally written for my [server optimization guide](https://tw
     * [Dependencies](#comment-server-dependencies)
     * [Deployment](#comment-server-deployment)
 * [Client-Side Setup](#client-side-setup)
-    * [Customizaton](#client-side-customization)
+    * [Advanced Usage](#advanced-usage)
+    * [Theming](#theming)
 * [Alternative Solutions](#alternative-systems)
 * [Online Demo](#online-demo)
     * [Running Locally](#running-locally)
@@ -96,7 +97,7 @@ but are a good starting point for other distributions:
 
     apt-get install ruby ruby-json ruby-sinatra ruby-redcarpet ruby-uuidtools ruby-rack-test
 
-For storage you get to choose between on of these two alternatives:
+For storage you get to choose between one of these two alternatives:
 
     apt-get install libsqlite3-ruby
 
@@ -107,24 +108,40 @@ Or
 
 ### Comment Server Deployment
 
-Assuming you have the appropriate library available you should specify
-your preferred storage mechanism via the command line options
-`--redis` or `--sqlite`:
+Deploying the server involves two steps:
 
-     $ ./server/comments.rb --redis | --sqlite=/tmp/foo.db
+* Actually launching the server, via systemd, runit, or similar.
+* Configuring your webserver to proxy to it.
 
-**NOTE** The server will bind to `127.0.0.1:9393` by default, so you
-will need to place a suitable proxy in front of it if you wish it to
-be available.
+To launch the comment server you'll run one of these two commands,
+depending on which storage back-end you prefer to use:
 
-**NOTE** You need to expose http://comments.example.com/comments/ to
-the outside world if client-browsers are going to connect to add/view comments.
+     $ ./server/comments.rb --redis
+     $ ./server/comments.rb --sqlite=/tmp/foo.db
+
+The server will bind to `127.0.0.1:9393` by default, so you'll
+need to setup a virtual host in nginx/apache which will forward
+connections to that instance.
+
+For nginx this would look something like this:
+
+    server {
+      listen          80;
+      server_name     comments.example.com;
+      location / {
+        proxy_pass        http://127.0.0.1:9393;
+        proxy_redirect    off;
+        proxy_set_header  X-Forwarded-For $remote_addr;
+      }
+    }
 
 
 ## Client-Side Setup
 
-Permitting comments on your sites static-pages is a simple as including the
-following in your HTML HEAD section:
+To allow comments upon your static site you must update your page(s) to
+include the appropriate javascript libraries, and the CSS.
+
+For basic usage you'll be adding this to the `<heda>` of your HTML:
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="/js/mustache.js" type="text/javascript"></script>
@@ -132,36 +149,41 @@ following in your HTML HEAD section:
 
     <script type="text/javascript">
       $( document ).ready(function() {
-        discussion( "http://server.name/comments/id" );
+        discussion( "http://server.name/comments/COMMENT_ID" );
     });
     </script>
 
-Then inside your body somewhere place the following:
+At the place you wish your comments to be displayed you'll add:
 
     <div id="comments"></div>
 
-The `discussion()` method accepts two arguments:
+
+### Advanced Usage.
+
+The example above configured the display of comments with the defaults,
+but the `discussion()` method actually accepts two arguments:
 
 * The URL of the comment-server you've got running, including a discussion ID.
 * An optional hash of parameters, to customize behaviour.
 
-For example one page might include comments like so:
+The discussion will require a unique key, which will be specified as
+an URL.  For example your home-page might include this:
 
-        discussion( "http://server.name/comments/home" );
+        discussion( "http://comments.example.com/comments/home" );
 
-And a different page might include:
+Your about page this:
 
-       discussion( "http://server.name/comments/about",
-                   { threading: false } );
+        discussion( "http://comments.example.com/comments/about" );
 
+This will ensure that each page will have a distinct discussion-thread
+upon it.
 
-This ensures that both pages show distinct comments, and there is no confusion.
-
-Valid options include:
+The second parameter, which is optional, allows things to be customized.
+Valid options for this hash include:
 
 * `comments`
     * The ID of the `<div>` in which comments will be inserted.
-    * The default will be `comments`.
+    * The default will be `comments`, as documented above.
 * `max_depth`
     * This should be an integer holding the maximum thread-depth permitted.
     * The default value is `0`, which allows an unlimited thread-depth.
@@ -173,24 +195,37 @@ Valid options include:
 * `reply_template`
     * The ID of a script-div which contains a template for the "add comment" form.
 
+If you wished to disable threading, allowing only a flat discussion
+hierarchy, you'd use this:
 
-## Client-Side Customization
+     discussion( "http://comments.example.com/comments/about",
+                 { threading: false });
 
-There are two parts of the code which use markup, albeit with CSS too:
+If you wished to allow comments, but stop arbitrary nesting:
+
+     discussion( "http://comments.example.com/comments/about",
+                 { threading: true, max_depth: 2 });
+
+
+### Theming
+
+You _could_ customize the formatting of comments, and the comment-submission
+form via CSS, however you might prefer to replace the presentation with
+something entirely different.
+
+To allow this we use  [mustache.js](https://github.com/janl/mustache.js) templates for:
 
 * The display of the individual comments.
 * The display of the reply-form.
 
-Both of these HTML-snippets are stored as [mustache.js](https://github.com/janl/mustache.js) templates, and can be overridden by passing a suitable argument to the constructor.
-
-For example:
+You can hide templates for both of these things inside your static HTML-files
+and cause them to be used by specifing their IDs like so:
 
         discussion( "http://localhost:9393/comments/id",
                     { comment_template: '#comment_template',
                       reply_template: '#reply_form'} );
 
-Once you do that you'll need to include the templates in your HTML
-page, for example the comment-template:
+This would require your HTML-page to contain something like this:
 
     <script id="comment_template" type="x-tmpl-mustache">
      <div class="comment">
@@ -198,7 +233,7 @@ page, for example the comment-template:
      ..
     </script>
 
-You can copy the defaults from the `e-comments.js` file itself.
+> **NOTE**: You can find the default templates which are used inside the  `e-comments.js` file.
 
 
 ## Alternative Systems
