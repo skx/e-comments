@@ -235,6 +235,12 @@ This would require your HTML-page to contain something like this:
 
 > **NOTE**: You can find the default templates which are used inside the  `e-comments.js` file.
 
+Replacing the template entirely allows you to display different data, for example you might wish to show the thread-level of each comment.  This could be achived by adding the following to the comment-template:
+
+     Depth:{{#depth}}{{ uuid }}{{/depth}}
+
+I'm open to pull-requests adding more formatting options, if you have something you think would be useful.  (Similarly any improvements to the presentation of comments by default would be appreciated.)
+
 
 ## Alternative Systems
 
