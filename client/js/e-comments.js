@@ -108,7 +108,7 @@ function replyForm(parent) {
         </tr> \
         <tr> \
           <td></td> \
-          <td align=right"><input type="submit" value="Add Comment"/></td> \
+          <td align="right"><input type="submit" value="Add Comment"/></td> \
         </tr> \
       </table> \
             </td> \
@@ -240,7 +240,7 @@ function comments(data) {
         var comment_template = ' \
 <div class="comment"> \
   <div class="link"><a href="#comment_{{ id }}">#{{ id }}</a></div> \
-  <div class=\"title\">{{{ gravitar }}}<a name="comment_{{ id }}">Author: {{ author }}</a></div> \
+  <div class="title">{{{ gravitar }}}<a name="comment_{{ id }}">Author: {{ author }}</a></div> \
   <div class="tagline">Posted <span title="{{ time }} ">{{ ago }}</span>.</div> \
   <div class="body">{{{ body }}}</div> \
   {{#threading}}<div class="replyto"><a href="#">Reply to this comment</a><div style="display:none; margin:50px; padding:50px; border:1px solid black;">{{#reply}}{{ uuid }}{{/reply}}</div></div>{{/threading}} \
