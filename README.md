@@ -141,7 +141,7 @@ For nginx this would look something like this:
 To allow comments upon your static site you must update your page(s) to
 include the appropriate javascript libraries, and the CSS.
 
-For basic usage you'll be adding this to the `<heda>` of your HTML:
+For basic usage you'll be adding this to the `<head>` of your HTML:
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="/js/mustache.js" type="text/javascript"></script>
@@ -158,7 +158,7 @@ At the place you wish your comments to be displayed you'll add:
     <div id="comments"></div>
 
 
-### Advanced Usage.
+### Advanced Usage
 
 The example above configured the display of comments with the defaults,
 but the `discussion()` method actually accepts two arguments:
