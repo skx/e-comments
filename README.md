@@ -16,6 +16,8 @@ Features:
    * Adding new backends is simple.
 * Markdown formatting of comments.
 * Support for __threaded discussion__.
+   * You can limit the depth of discussions, to a given depth.
+   * Or leave the defaults in-place to allow arbitrarily nested replies.
 * Anti-spam plugins:
    * Three simple plugins included as a demonstration.
    * The sample plugins block hyperlinks in comment-author names, bodies which reference `viagra`, and any remote IPs which have been locally blacklisted.
@@ -157,8 +159,15 @@ This ensures that both pages show distinct comments, and there is no confusion.
 
 Valid options include:
 
+* `comments`
+    * The ID of the `<div>` in which comments will be inserted.
+    * The default will be `comments`.
+* `max_depth`
+    * This should be an integer holding the maximum thread-depth permitted.
+    * The default value is `0`, which allows an unlimited thread-depth.
 * `threading`
     * A boolean to control whether threading is enabled/disabled.
+    * The default value is `true`.
 * `comment_template`
     * The ID of a script-div which contains a template for comment-formatting.
 * `reply_template`
@@ -167,8 +176,7 @@ Valid options include:
 
 ## Client-Side Customization
 
-There are two parts of the code which use markup, albeit with CSS
-too:
+There are two parts of the code which use markup, albeit with CSS too:
 
 * The display of the individual comments.
 * The display of the reply-form.
@@ -188,7 +196,7 @@ page, for example the comment-template:
      <div class="comment">
      <div class="link"><a href="#comment_{{ id }}">#{{ id }}</a></div>
      ..
-     </script>
+    </script>
 
 You can copy the defaults from the `e-comments.js` file itself.
 
