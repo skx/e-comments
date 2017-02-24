@@ -34,8 +34,23 @@
 // --
 
 
-var GLOBAL = { threading: true,
-               max_depth: 0 }
+var GLOBAL = {
+    //
+    // Is threading enabled?
+    //
+    threading: true,
+
+    //
+    // Max depth of threaded-replies, if enabled.
+    //
+    max_depth: 0,
+
+    //
+    // ID of the div to work with
+    //
+    comments: "comments",
+};
+
 
 //
 // Load the comments by making a JSONP request to the given URL.
@@ -45,10 +60,12 @@ var GLOBAL = { threading: true,
 function loadComments(url, options, err) {
 
     //
-    // Save options away
+    // Save any supplied options away.
     //
     if ( options ) {
-        GLOBAL = options;
+        jQuery.each(options, function (name, value) {
+            GLOBAL[name] = value;
+        } );
     }
 
     $.ajax({
@@ -149,7 +166,7 @@ function comments(data) {
     //
     // We're given a DIV with ID comments.  Empty it.
     //
-    $("#comments").html("");
+    $("#" + GLOBAL['comments']).html("");
 
     //
     // We might lose this - I'm undecided.
@@ -160,9 +177,9 @@ function comments(data) {
     // If there are some comments we should post a header.
     //
     if (data.length > 0) {
-        $("#comments").prepend("<h2>Comments</h2>");
+        $("#"+ GLOBAL['comments']).prepend("<h2>Comments</h2>");
     } else {
-        $("#comments").prepend("<h2>No Comments</h2>");
+        $("#"+ GLOBAL['comments']).prepend("<h2>No Comments</h2>");
     }
 
 
@@ -278,7 +295,7 @@ function comments(data) {
             // Otherwise just append to the bottom of our list
             // of comments.
             //
-            $("#comments").append(html);
+            $("#"+ GLOBAL['comments']).append(html);
         }
 
         //
@@ -290,7 +307,7 @@ function comments(data) {
     //
     // Add a new top-level reply form.
     //
-    $("#comments").append(replyForm(null));
+    $("#"+ GLOBAL['comments']).append(replyForm(null));
 
 }
 
@@ -387,10 +404,10 @@ function bindEventHandlers(url, options, err) {
     // scratch as a result of the AJAX POST request completing.)
     //
     if (err) {
-        $("#comments").prepend("<h2>Comment Rejected</h2><blockquote><p>Your comment was not submitted.</p><p><b>" + err + "</b></p></blockquote>");
+        $("#"+ GLOBAL['comments']).prepend("<h2>Comment Rejected</h2><blockquote><p>Your comment was not submitted.</p><p><b>" + err + "</b></p></blockquote>");
 
         $('html, body').animate({
-            scrollTop: $("#comments").offset().top
+            scrollTop: $("#"+ GLOBAL['comments']).offset().top
         }, 1000);
     }
 }
