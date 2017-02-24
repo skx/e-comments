@@ -34,7 +34,8 @@
 // --
 
 
-var GLOBAL = { threading: true }
+var GLOBAL = { threading: true,
+               max_depth: 0 }
 
 //
 // Load the comments by making a JSONP request to the given URL.
@@ -55,7 +56,7 @@ function loadComments(url, options, err) {
         dataType: 'jsonp',
         crossDomain: true,
         complete: (function() {
-            populateReplyForm(url, options, err);
+            bindEventHandlers(url, options, err);
         })
     });
 }
@@ -125,6 +126,24 @@ function replyForm(parent) {
 //
 // Called when the JSONP data is loaded.
 //
+// This function will be invoked with a JSON array of hashes.
+//
+// Each array-member represents a single comment, and the hash
+// will contain keys such as:
+//
+//   author    The author of the comment.  (Name)
+//   body      The body of the comment.
+//   gravitar  The Gravitar link for this auther
+//   parent    The parent-comment, if any.
+//
+// For each comment we add a rendered fragment of HTML to the
+// output-div, as well as a per-comment reply form (if nested
+// comments are enabled).
+//
+// Once we've completed the end result will be that the `comments`
+// div will be populated, then we setup event-handlers such that
+// the expected functions will be invoked on clicks.
+//
 function comments(data) {
 
     //
@@ -146,10 +165,19 @@ function comments(data) {
         $("#comments").prepend("<h2>No Comments</h2>");
     }
 
+
+    //
+    // Count the thread-depth for each comment.
+    //
+    // The key is the UUID of the particular comment.
+    //
+    var nesting = {};
+
     //
     // For each comment.
     //
     $.each(data, function(key, val) {
+
 
         //
         // This builds a (hidden) reply-to form for the given comment.
@@ -159,6 +187,16 @@ function comments(data) {
                 return (replyForm(val.uuid));
             }
         };
+
+        //
+        // Calculate the thread-depth of the current comment.
+        //
+        val.depth = function() {
+            return function(uuid) {
+                return (nesting[val.uuid]);
+            }
+        };
+
 
         //
         // Is threading enabled?
@@ -186,7 +224,7 @@ function comments(data) {
 <div class="comment"> \
   <div class="link"><a href="#comment_{{ id }}">#{{ id }}</a></div> \
   <div class=\"title\">{{{ gravitar }}}<a name="comment_{{ id }}">Author: {{ author }}</a></div> \
-  <div class="tagline">Posted {{ ago }}.</div> \
+  <div class="tagline">Posted <span title="{{ time }} ">{{ ago }}</span>.</div> \
   <div class="body">{{{ body }}}</div> \
   {{#threading}}<div class="replyto"><a href="#">Reply to this comment</a><div style="display:none; margin:50px; padding:50px; border:1px solid black;">{{#reply}}{{ uuid }}{{/reply}}</div></div>{{/threading}} \
 </div> \
@@ -200,6 +238,26 @@ function comments(data) {
         if (GLOBAL && GLOBAL['comment_template']) {
             comment_template = $(GLOBAL['comment_template']).html();
         }
+
+        //
+        // Record the depth of this comment.
+        //
+        // The depth is the parent's depth + 1
+        //
+        // If there is no parent then we default to one, as expected.
+        //
+        if (val['parent']) {
+            nesting[ val['uuid'] ] = nesting[ val['parent'] ] + 1;
+        } else {
+            nesting[ val['uuid'] ] = 1;
+        }
+
+        //
+        // Disable replies if the current thread is "too deep".
+        //
+        if( ( GLOBAL['max_depth'] ) && ( val.threading ) )
+            if ( ( GLOBAL['max_depth'] != 0 ) && ( nesting[ val['uuid'] ] > GLOBAL['max_depth' ] ) )
+                val.threading = false;
 
         //
         // Render the output.
@@ -237,9 +295,14 @@ function comments(data) {
 }
 
 //
-// Generate the reply-form for users to add comments.
+// This function is called after the JSONP-callback function,
+// which is responsible for parsing and inserting the comments/forms
+// into the HTML-page.
 //
-function populateReplyForm(url, options, err) {
+// This function sets up the event-handles such that those freshly
+// inserted forms and divs work as expected.
+//
+function bindEventHandlers(url, options, err) {
 
     //
     // Now we've rendered the comments, and populated the
