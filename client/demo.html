@@ -7,16 +7,18 @@
     <script type="text/javascript">
       $( document ).ready(function() {
         discussion( "http://localhost:9393/comments/id",
-                    { threading: true } );
+                    { threading: true, max_depth: 2 } );
       });
     </script>
-    <title>Simple Demo</title>
+    <title>Simple Comment-Demo</title>
   </head>
   <body>
     <h1>Simple External Comment Demo</h1>
+    <blockquote>
     <p>This is a demo of the <a href="https://github.com/skx/e-comments/">e-comments</a> self-hosted comment server.</p>
     <p>The code was initially developed to provide comments for a 100% static site  (<a href="https://tweaked.io/">https://tweaked.io : server optimization</a>.)</p>
     <p>Comments will appear below this area, once loaded via a cross-domain JSONP request.</p>
+    </blockquote>
     <div id="comments"></div>
 
 <noscript>
