@@ -17,37 +17,24 @@ end
 # and the storage of the comments.
 #
 class Backend
+  @@subclasses = { }
 
-  #
-  # Class-Factory
-  #
-  def self.create type
-    case type
-    when "sqlite"
-      SQLiteBackend.new
-    when "redis"
-      RedisBackend.new
+  def self.create( type, args )
+    c = @@subclasses[type]
+    if c
+      c.new( args )
     else
-      raise "Bad backend type: #{type}"
+      puts "Unknown storage type `#{type}`.  Known mechanisms are:"
+      @@subclasses.each do |k,v|
+        puts( "\t#{k}" )
+      end
+      exit(1)
     end
   end
 
-
-  #
-  # Return an array of strings for the given ID.
-  #
-  def get( id )
-    raise "Subclasses must implement this method!"
+  def self.register_storage name
+    @@subclasses[name] = self
   end
-
-
-  #
-  # Add a new string (of concatenated comment-data) to the given identifier.
-  #
-  def set( id, values )
-    raise "Subclasses must implement this method!"
-  end
-
 end
 
 
@@ -59,9 +46,8 @@ class SQLiteBackend < Backend
   #
   # Constructor.
   #
-  def initialize
-    db = ENV["DB"] || "storage.db"
-    @sqlite = SQLite3::Database.open db
+  def initialize( path = "storage.db" )
+    @sqlite = SQLite3::Database.open( path )
 
     begin
       @sqlite.execute <<SQL
@@ -102,6 +88,10 @@ SQL
     @sqlite.execute( "INSERT INTO store (id,content) VALUES(?,?)", id, content )
   end
 
+  #
+  #  Register our class.
+  #
+  register_storage "sqlite"
 end
 
 
@@ -115,9 +105,8 @@ class RedisBackend < Backend
   #
   # Constructor.
   #
-  def initialize
-    rehost = ENV["REDIS"] || "127.0.0.1"
-    @redis = Redis.new( :host => rehost )
+  def initialize( address = "127.0.0.1" )
+    @redis = Redis.new( :host => address )
   end
 
 
@@ -136,9 +125,8 @@ class RedisBackend < Backend
     @redis.sadd( "comments-#{id}",content )
   end
 
+  #
+  #  Register our class.
+  #
+  register_storage "redis"
 end
-
-
-
-
-

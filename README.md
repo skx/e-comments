@@ -116,8 +116,8 @@ Deploying the server involves two steps:
 To launch the comment server you'll run one of these two commands,
 depending on which storage back-end you prefer to use:
 
-     $ ./server/comments.rb --redis
-     $ ./server/comments.rb --sqlite=/tmp/foo.db
+     $ ./server/comments.rb --storage=redis  --storage-args=127.0.0.1
+     $ ./server/comments.rb --storage=sqlite --storage-args=/tmp/foo.db
 
 The server will bind to `127.0.0.1:9393` by default, so you'll
 need to setup a virtual host in nginx/apache which will forward
@@ -267,7 +267,7 @@ Providing you have the dependencies installed you can run the same
 demo locally:
 
 * Launch the comment-server in one terminal.
-     * `./server/comments.rb --sqlite=/tmp/foo.db`
+     * `./server/comments.rb --storage=sqlite --storage-args=/tmp/foo.db`
      * The file `/tmp/foo.db` will be created, and used to store your comments.
 * Start a local HTTP server in clients in another:
      * `cd client ; python -m SimpleHTTPServer`

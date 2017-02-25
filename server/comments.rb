@@ -91,7 +91,6 @@ class CommentStore < Sinatra::Base
   #
   def initialize
     super
-    @storage = Backend.create(ENV["STORAGE"] || "redis")
   end
 
 
@@ -160,7 +159,7 @@ class CommentStore < Sinatra::Base
     #
     #  Add to the set.
     #
-    @storage.add( id, obj.to_json )
+    $storage.add( id, obj.to_json )
 
     #
     #  All done
@@ -183,7 +182,7 @@ class CommentStore < Sinatra::Base
     #
     #  Get the members of the set.
     #
-    values = @storage.get( id )
+    values = $storage.get( id )
 
     #
     # Markdown renderer options.
@@ -306,26 +305,41 @@ end
 
 
 #
+# Storage system
+#
+$storage = nil
+
+
+#
 # Launch the server
 #
 if __FILE__ == $0
 
+  storage_type = nil
+  storage_args = nil
+
   opts = GetoptLong.new(
-                        [ '--redis',  '-r', GetoptLong::NO_ARGUMENT ],
-                        [ '--sqlite', '-s', GetoptLong::REQUIRED_ARGUMENT ]
+                        [ '--storage',       '-s', GetoptLong::REQUIRED_ARGUMENT ],
+                        [ '--storage-args',  '-a', GetoptLong::REQUIRED_ARGUMENT ]
                         )
 
   begin
     opts.each do |opt,arg|
       case opt
-      when '--redis'
-        ENV["STORAGE"]= "redis"
-      when '--sqlite'
-        ENV["STORAGE"]= "sqlite"
-        ENV["DB"] = arg
+      when '--storage'
+        storage_type = arg
+      when '--storage-args'
+        storage_args = arg
       end
     end
   rescue
+  end
+
+  $storage = Backend.create( storage_type, storage_args )
+
+  if ( $storage.nil? )
+    puts "You must specify a storage mechanism"
+    exit(1)
   end
 
   CommentStore.run!
