@@ -309,32 +309,64 @@ function comments(data) {
     // This should have been done when the comment-bodies were inserted
     // but for the moment it goes here.
     //
-    // We'll show ten lines by default.
+    // We'll show ten lines by default, or 1024 characters.
     //
     var minimized_elements = $('.body');
-    var maxLines = 10;
+    var max_lines          = 10;
+    var max_length         = 1024;
 
     minimized_elements.each(function(){
-        var textArr = $(this).html().split(/[\r\n]/);
-        var countLines = textArr.length;
-
-        if ( countLines <= maxLines )
-            return;
 
         //
-        // Horrid.
+        // Split on newlines.
         //
-        var text_less = textArr.slice(0, maxLines).join("\n");
-        var text_more = textArr.slice(maxLines, countLines).join("\n");
+        var text   = $(this).html()
+        var lines  = text.split(/[\r\n]/);
+        var lcount = lines.length;
+
+        var trunc = undefined;
+        var rest  = undefined;
 
         //
-        // Append.
+        // Too many lines?
         //
-        $(this).html(
-            text_less +
-                '<a href="#" class="more">Read more ..</a>' +
-                '<span style="display:none;"><br />'+ text_more +'</span>'
-        );
+        if ( lcount >= max_lines )
+        {
+            //
+            // The truncated text, and the rest of that text.
+            //
+            trunc = lines.slice(0, max_lines).join("\n");
+            rest  = lines.slice(max_lines, lcount).join("\n");
+        }
+
+        //
+        // Too much text?
+        //
+        if ( text.length > max_length )
+        {
+            //
+            // The truncated text, and the rest of the text.
+            //
+            trunc = text.substr(0,max_length);
+            rest  = text.substr(max_length);
+        }
+
+        //
+        // If we have `truncated` and `rest` of the text then
+        // update the DOM to show the truncated version and the
+        // magic-link to expand the text.
+        //
+        if ( trunc && rest )
+        {
+            //
+            // Modify the display of the body.
+            //
+            $(this).html(
+                trunc +
+                    '<br/><a href="#" class="more">Read more ..</a>' +
+                    '<span style="display:none;">'+ rest +'</span>'
+            );
+        }
     });
 
     //
