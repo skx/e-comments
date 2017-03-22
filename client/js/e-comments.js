@@ -342,7 +342,7 @@ function comments(data) {
         //
         // Too much text?
         //
-        if ( text.length > max_length )
+        if ( ( text.length > max_length ) && ( trunc == undefined ) )
         {
             //
             // The truncated text, and the rest of the text.
