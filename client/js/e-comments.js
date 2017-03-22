@@ -214,7 +214,6 @@ function comments(data) {
             }
         };
 
-
         //
         // Is threading enabled?
         //
@@ -305,6 +304,40 @@ function comments(data) {
     });
 
     //
+    // Now we're going to truncate the bodies of long comments.
+    //
+    // This should have been done when the comment-bodies were inserted
+    // but for the moment it goes here.
+    //
+    // We'll show ten lines by default.
+    //
+    var minimized_elements = $('.body');
+    var maxLines = 10;
+
+    minimized_elements.each(function(){
+        var textArr = $(this).html().split(/[\r\n]/);
+        var countLines = textArr.length;
+
+        if ( countLines <= maxLines )
+            return;
+
+        //
+        // Horrid.
+        //
+        var text_less = textArr.slice(0, maxLines).join("\n");
+        var text_more = textArr.slice(maxLines, countLines).join("\n");
+
+        //
+        // Append.
+        //
+        $(this).html(
+            text_less +
+                '<a href="#" class="more">Read more ..</a>' +
+                '<span style="display:none;"><br />'+ text_more +'</span>'
+        );
+    });
+
+    //
     // Add a new top-level reply form.
     //
     $("#"+ GLOBAL['comments']).append(replyForm(null));
@@ -387,6 +420,15 @@ function bindEventHandlers(url, options, err) {
         return false;
     }));
 
+
+    //
+    // Allow long comments - which are possibly SPAM? - to be displayed.
+    //
+    $('a.more').click(function(event){
+        event.preventDefault();
+        $(this).hide().prev().toggle();
+        $(this).next().toggle();
+    });
 
     //
     // If there was an error submitting the comment then handle it here.
