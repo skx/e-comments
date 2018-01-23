@@ -39,7 +39,7 @@ Run-time (client-side) dependencies:
 * mustache.js
     * Included in this repository.
 
-This server was originally written for my [server optimization guide](https://tweaked.io/) but since it seemed like a generally-useful piece of code it was moved into its own repository.
+This server was originally written for a server optimization guide but since it seemed like a generally-useful piece of code it was moved into its own repository.
 
 ### Contents
 
@@ -51,8 +51,7 @@ This server was originally written for my [server optimization guide](https://tw
     * [Advanced Usage](#advanced-usage)
     * [Theming](#theming)
 * [Alternative Solutions](#alternative-systems)
-* [Online Demo](#online-demo)
-    * [Running Locally](#running-locally)
+* [Running Locally](#running-locally)
 
 
 ## The Comment Server
@@ -255,13 +254,7 @@ I'm open to pull-requests adding more formatting options, if you have something 
     * Ruby-on-rails-based.
     * [No longer maintained](https://github.com/phusion/juvia/issues/65).
 
-## Online Demo
-
-There is a live online demo you can view here:
-
-* https://tweaked.io/guide/demo/
-
-### Running Locally
+## Running Locally
 
 Providing you have the dependencies installed you can run the same
 demo locally:
